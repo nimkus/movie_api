@@ -1,9 +1,13 @@
 const express = require('express'),
   morgan = require('morgan'),
   fs = require('fs'),
-  path = require('path');
+  path = require('path'),
+  bodyParser = require('body-parser'),
+  methodOverride = require('method-override');
 
+// Calling Express
 const app = express();
+
 // create a write stream (in append mode) + a ‘log.txt’ file is created in root directory
 const accessLogStream = fs.createWriteStream(path.join(__dirname, 'log.txt'), { flags: 'a' });
 
@@ -14,29 +18,21 @@ app.use(morgan('combined', { stream: accessLogStream }));
 // setup static files
 app.use('/', express.static('public'));
 
-// Responses
+// Body parser and method override middleware
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+app.use(methodOverride());
+
+// Routes
 app.get('/', (req, res) => {
   res.send('Welcome to our movie API!');
 });
 
 app.get('/movies', (req, res) => {
-  let movieJson = '{"top1":"Movie1", "top2":"Movie2", "top3":"Movie3"}';
-  res.send(JSON.parse(movieJson));
+  res.json({ top1: 'movie1', top2: 'movie2', top3: 'movie3' });
 });
 
 // catch-all error handling for application-level errors
-const bodyParser = require('body-parser'),
-  methodOverride = require('method-override');
-
-app.use(
-  bodyParser.urlencoded({
-    extended: true,
-  })
-);
-
-app.use(bodyParser.json());
-app.use(methodOverride());
-
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).send('Something broke!');
