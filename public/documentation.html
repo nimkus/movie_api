@@ -11,5 +11,61 @@
       The “movies” web application provides users with access to information about different movies, directors, and
       genres. Users can to sign up, update their personal information, and create a list of their favorite movies.
     </p>
+
+    <h2>Endpoints</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Method</th>
+          <th>Path</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>GET</td>
+          <td>/movies</td>
+          <td>Return a list of ALL movies to the user</td>
+        </tr>
+        <tr>
+          <td>GET</td>
+          <td>/movies/:title</td>
+          <td>Return data about a single movie by title (description, genre, director, image URL, whether it’s featured or not)</td>
+        </tr>
+        <tr>
+          <td>GET</td>
+          <td>/movies/genres/:genreName</td>
+          <td>Return data about a genre (description) by name/title (e.g., “Thriller”)</td>
+        </tr>
+        <tr>
+          <td>GET</td>
+          <td>/movies/directors/:directorName</td>
+          <td>Return data about a director (bio, birth year, death year) by name</td>
+        </tr>
+        <tr>
+          <td>POST</td>
+          <td>/users/</td>
+          <td>Register new user</td>
+        </tr>
+        <tr>
+          <td>DELETE</td>
+          <td>/users/:userId</td>
+          <td>Deregister existing username (showing only a text that a user email has been removed)</td>
+        </tr>
+        <tr>
+          <td>PUT</td>
+          <td>/users/:userId</td>
+          <td>Update user info</td>
+        </tr>
+        <tr>
+          <td>PUT</td>
+          <td>/users/:userId/:movieTitle</td>
+          <td>Add a movie to list of user favorites (showing only a text that a movie has been added)</td>
+        </tr>
+        <tr>
+          <td>DELETE</td>
+          <td>/users/:userId/:movieTitle</td>
+          <td>Remove a movie from list of user favorites (showing only a text that a movie has been removed)</td>
+        </tr>
   </body>
 </html>
