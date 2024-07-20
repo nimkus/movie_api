@@ -96,10 +96,10 @@ app.get('/movies/:title', (req, res) => {
 //READ
 app.get('/movies/genres/:genreName', (req, res) => {
   const { genreName } = req.params;
-  const genre = movies.find((movie) => movie.genre.name === genreName).genre;
+  const genre = movies.find((movie) => movie.genre.name === genreName);
 
   if (genre) {
-    res.status(200).json(genre);
+    res.status(200).json(genre.genre);
   } else {
     res.status(400).send('No such genre exists');
   }
@@ -108,10 +108,10 @@ app.get('/movies/genres/:genreName', (req, res) => {
 //READ
 app.get('/movies/directors/:directorName', (req, res) => {
   const { directorName } = req.params;
-  const director = movies.find((movie) => movie.director.name === directorName).director;
+  const director = movies.find((movie) => movie.director.name === directorName);
 
   if (director) {
-    res.status(200).json(director);
+    res.status(200).json(director.director);
   } else {
     res.status(400).send('No such director exists');
   }
