@@ -4,77 +4,62 @@ const express = require('express'),
   path = require('path'),
   bodyParser = require('body-parser'),
   methodOverride = require('method-override'),
-  uuid = require('uuid');
+  uuid = require('uuid'),
+  mongoose = require('mongoose');
 
-let movies = [
-  {
-    title: 'Movie1',
-    description: 'Lorem Ipsum',
-    genre: {
-      name: 'GenreA',
-      description: 'Lorem Ipsum',
-    },
-    director: {
-      name: 'Director1',
-      bio: 'Lorem Ipsum',
-    },
-  },
-  {
-    title: 'Movie2',
-    description: 'Lorem Ipsum',
-    genre: {
-      name: 'GenreB',
-      description: 'Lorem Ipsum',
-    },
-    director: {
-      name: 'Director2',
-      bio: 'Lorem Ipsum',
-    },
-  },
-];
+// Integrating Mongoose Models
+const Models = require('./models.js');
+const { get } = require('http');
 
-let users = [
-  {
-    id: 1,
-    name: 'Jessica Drake',
-    favMovies: [],
-  },
-  {
-    id: 2,
-    name: 'Ben Cohen',
-    favMovies: ['Movie1'],
-  },
-  {
-    id: 3,
-    name: 'Lisa Downing',
-    favMovies: [],
-  },
-];
+const movies = Models.movies,
+  genres = Models.genres,
+  directors = Models.directors,
+  cast = Models.cast,
+  users = Models.users;
+
+mongoose.connect('mongodb://localhost:27017/myFlixDB', { useNewUrlParser: true, useUnifiedTopology: true });
 
 // Calling Express
 const app = express();
+
+//////////////
+// LOGGING //
+////////////
 
 // create a write stream (in append mode) + a ‘log.txt’ file is created in root directory
 const accessLogStream = fs.createWriteStream(path.join(__dirname, 'log.txt'), { flags: 'a' });
 
 // setup the logger
-//app.use(morgan('common')); // 'common' logs basic data such as IP address, the time of the request, the request method and path, as well as the status code that was sent back as a response
 app.use(morgan('combined', { stream: accessLogStream }));
 
-// setup static files
-app.use('/', express.static('public'));
+///////////////////
+// JSON PARSING //
+/////////////////
 
 // Body parser and method override middleware
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(methodOverride());
 
-// ROUTES
+///////////////////
+// STATIC FILES //
+/////////////////
+
+// setup static files
+app.use('/', express.static('public'));
+
+//////////////////
+// APP ROUTING //
+////////////////
+
+// --> ENDPOINTS: Home
+
+// READ
 app.get('/', (req, res) => {
   res.send('Welcome to our movie API!');
 });
 
-// ENDPOINTS: Movies
+// --> ENDPOINTS: Movies
 
 //READ
 app.get('/movies', (req, res) => {
@@ -117,61 +102,128 @@ app.get('/movies/directors/:directorName', (req, res) => {
   }
 });
 
-// ENDPOINTS: User
+// --> ENDPOINTS: User
 
-// CREATE
-app.post('/users/', (req, res) => {
-  const newUser = req.body;
+/* Expected format
+{
+  Username: { type: string, required: true },
+  Password: { type: string, required: true },
+  Email: { type: string, required: true },
+  Birthday: Date,
+  FavoriteMovies: [{ type: mongoose.Schema.Types.ObjectId, ref: 'movies' }],
+}*/
 
-  if (newUser.name) {
-    newUser.id = uuid.v4();
-    users.push(newUser);
-    res.status(201).json(newUser);
-  } else {
-    res.status(400).send('Missing name in request body.');
-  }
-});
-
-// CREATE
-app.post('/users/:userId/:movieTitle', (req, res) => {
-  const { userId, movieTitle } = req.params;
-
-  let movie = movies.find((movie) => movie.title === movieTitle);
-  let user = users.find((user) => user.id == userId);
-
-  if (movie && user) {
-    user.favMovies.push(movieTitle);
-    res.status(200).send(`${movieTitle} has been added to the array of user ${userId}`);
-  } else {
-    res.status(400).send('User or movie does not exist.');
-  }
-});
-
-// READ
-app.get('/users/:username', (req, res) => {
-  res.status(200).json(
-    users.find((user) => {
-      return user.name === req.params.username;
+// CREATE – Add a new user
+app.post('/users', async (req, res) => {
+  await users
+    .findOne({ Username: req.body.Username })
+    .then((user) => {
+      if (user) {
+        return res.status(400).send(req.body.Username + 'already exists');
+      } else {
+        users
+          .create({
+            Username: req.body.Username,
+            Password: req.body.Password,
+            Email: req.body.Email,
+            Birthday: req.body.Birthday,
+            FavoriteMovies: req.body.FavoriteMovies,
+          })
+          .then((user) => {
+            res.status(201).json(user);
+          })
+          .catch((err) => {
+            console.error(err);
+            res.status(500).send('Error: ' + err);
+          });
+      }
     })
-  );
+    .catch((err) => {
+      console.error(error);
+      res.status(500).send('Error: ' + err);
+    });
 });
 
-// UPDATE
-app.put('/users/:userId', (req, res) => {
-  const { userId } = req.params;
-  const updatedUser = req.body;
-
-  let user = users.find((user) => user.id == userId);
-
-  if (user) {
-    user.name = updatedUser.name;
-    res.status(200).json(user);
-  } else {
-    res.status(400).send('No such user.');
-  }
+// CREATE – Add a favorite movie to a user
+app.post('/users/:username/:movieId', async (req, res) => {
+  await users
+    .findOneAndUpdate(
+      { Username: req.params.username },
+      {
+        $push: { FavoriteMovies: req.params.movieId },
+      },
+      { new: true }
+    )
+    .then((updatedUser) => {
+      res.json(updatedUser);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send('Error: ' + err);
+    });
 });
 
-// DELETE
+// READ – Show all users
+app.get('/users', async (req, res) => {
+  await users
+    .find()
+    .then((users) => {
+      res.status(201).json(users);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send('Error: ' + err);
+    });
+});
+
+// READ – Show data of a specific user
+app.get('/users/:Username', async (req, res) => {
+  await users
+    .findOne({ Username: req.params.Username })
+    .then((user) => {
+      res.json(user);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send('Error: ' + err);
+    });
+});
+
+// UPDATE Change user info
+
+/* We’ll expect JSON in this format
+{
+  Username: { type: string, required: true },
+  Password: { type: string, required: true },
+  Email: { type: string, required: true },
+  Birthday: Date,
+  FavoriteMovies: [{ type: mongoose.Schema.Types.ObjectId, ref: 'movies' }],
+}*/
+
+app.put('/users/:Username', async (req, res) => {
+  await users
+    .findOneAndUpdate(
+      { Username: req.params.Username },
+      {
+        $set: {
+          Username: req.body.Username,
+          Password: req.body.Password,
+          Email: req.body.Email,
+          Birthday: req.body.Birthday,
+        },
+      },
+      { new: true } // This line makes sure that the updated document is returned
+    )
+    .then((updatedUser) => {
+      res.json(updatedUser);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send('Error: ' + err);
+    });
+});
+
+// DELETE Movie title
 app.delete('/users/:userId/:movieTitle', (req, res) => {
   const { userId, movieTitle } = req.params;
 
@@ -192,7 +244,7 @@ app.delete('/users/:userId/:movieTitle', (req, res) => {
   }
 });
 
-// DELETE
+// DELETE User
 app.delete('/users/:userId', (req, res) => {
   const { userId } = req.params;
 
