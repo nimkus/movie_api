@@ -4,58 +4,58 @@ const mongoose = require('mongoose');
 
 // Model for data about movies
 let moviesSchema = mongoose.Schema({
-  Title: { type: String, required: true },
-  Year: { type: Number },
-  Genre: [{ type: mongoose.Schema.Types.ObjectId, ref: 'genres' }],
-  Director: [{ type: mongoose.Schema.Types.ObjectId, ref: 'directors' }],
-  Cast: [{ type: mongoose.Schema.Types.ObjectId, ref: 'cast' }],
-  Imdb_rating: { type: Number },
-  Duration: { type: Number },
-  Language: { type: String },
-  Description: { type: String, required: true },
-  ImagePath: { type: String },
-  Featured: { type: Boolean },
+  title: { type: String, required: true },
+  year: { type: Number },
+  genre: [{ type: mongoose.Schema.Types.ObjectId, ref: 'genres' }],
+  director: [{ type: mongoose.Schema.Types.ObjectId, ref: 'directors' }],
+  cast: [{ type: mongoose.Schema.Types.ObjectId, ref: 'cast' }],
+  imdb_rating: { type: Number },
+  duration: { type: Number },
+  language: { type: String },
+  description: { type: String, required: true },
+  imagePath: { type: String },
+  featured: { type: Boolean },
 });
 
 // Model for Data about genres
-let genresSchema = mongoose.Schema({
-  Name: { type: String, required: true },
-  Description: { type: String },
+let genreSchema = mongoose.Schema({
+  name: { type: String, required: true },
+  description: { type: String },
 });
 
 // Model for data about directors
-let directorsSchema = mongoose.Schema({
-  Name: { type: String, required: true },
-  Bio: { type: String },
-  Date_of_birth: Date,
-  Date_of_death: Date,
+let directorSchema = mongoose.Schema({
+  name: { type: String, required: true },
+  bio: { type: String },
+  date_of_birth: Date,
+  date_of_death: Date,
 });
 
 // Model for data about the cast
 let castSchema = mongoose.Schema({
-  Name: { type: String, required: true },
-  Bio: { type: String },
-  DateOfBirth: Date,
-  Movies: { type: String },
+  name: { type: String, required: true },
+  bio: { type: String },
+  dateOfBirth: Date,
+  movies: { type: String },
 });
 
 // Model for data about Users
 let usersSchema = mongoose.Schema({
-  Username: { type: String, required: true },
-  Password: { type: String, required: true },
-  Email: { type: String, required: true },
-  Birthday: Date,
-  FavoriteMovies: [{ type: mongoose.Schema.Types.ObjectId, ref: 'movies' }],
+  username: { type: String, required: true },
+  password: { type: String, required: true },
+  email: { type: String, required: true },
+  birthday: Date,
+  favoriteMovies: [{ type: mongoose.Schema.Types.ObjectId, ref: 'movies' }],
 });
 
-let movies = mongoose.model('Movies', moviesSchema),
-  genres = mongoose.model('Genres', genresSchema),
-  directors = mongoose.model('Directors', directorsSchema),
-  cast = mongoose.model('Cast', castSchema),
-  users = mongoose.model('Users', usersSchema);
+const movies = mongoose.model('movies', moviesSchema),
+  genre = mongoose.model('genres', genreSchema),
+  director = mongoose.model('director', directorSchema),
+  cast = mongoose.model('cast', castSchema),
+  users = mongoose.model('users', usersSchema);
 
 module.exports.movies = movies;
-module.exports.genres = genres;
-module.exports.directors = directors;
+module.exports.genres = genre;
+module.exports.directors = director;
 module.exports.cast = cast;
 module.exports.users = users;

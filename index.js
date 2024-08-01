@@ -7,6 +7,12 @@ const express = require('express'),
   uuid = require('uuid'),
   mongoose = require('mongoose');
 
+// Function to capitalize the first letter of a string
+function capitalizeFLetter(string) {
+  let capitalizedString = string[0].toUpperCase() + string.slice(1);
+  return capitalizedString;
+}
+
 // Integrating Mongoose Models
 const Models = require('./models.js');
 const { get } = require('http');
@@ -17,7 +23,7 @@ const movies = Models.movies,
   cast = Models.cast,
   users = Models.users;
 
-mongoose.connect('mongodb://localhost:27017/myFlixDB', { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect('mongodb://localhost:27017/myFlixDB');
 
 // Calling Express
 const app = express();
@@ -61,21 +67,36 @@ app.get('/', (req, res) => {
 
 // --> ENDPOINTS: Movies
 
-//READ
-app.get('/movies', (req, res) => {
-  res.status(200).json(movies);
+// READ Get a list of all movies
+app.get('/movies', async (req, res) => {
+  await movies
+    .find()
+    .then((movies) => {
+      res.status(201).json(movies);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send('Error: ' + err);
+    });
 });
 
-//READ
-app.get('/movies/:title', (req, res) => {
-  const { title } = req.params;
-  const movie = movies.find((movie) => movie.title === title);
-
-  if (movie) {
-    res.status(200).json(movie);
-  } else {
-    res.status(400).send('No such movie exists');
-  }
+// READ Get a single movie, by title
+app.get('/movies/:title', async (req, res) => {
+  await movies
+    .findOne({ title: req.params.title })
+    .populate('genre')
+    .then((movie) => {
+      if (movie) {
+        res.status(200).json(movie);
+      } else {
+        let movieTitle = capitalizeFLetter(req.params.title);
+        res.status(400).send('The movie "' + movieTitle + '" does not exist');
+      }
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send('Error: ' + err);
+    });
 });
 
 //READ
@@ -104,6 +125,8 @@ app.get('/movies/directors/:directorName', (req, res) => {
 
 // --> ENDPOINTS: User
 
+// CREATE – Add a new user
+
 /* Expected format
 {
   Username: { type: string, required: true },
@@ -113,7 +136,6 @@ app.get('/movies/directors/:directorName', (req, res) => {
   FavoriteMovies: [{ type: mongoose.Schema.Types.ObjectId, ref: 'movies' }],
 }*/
 
-// CREATE – Add a new user
 app.post('/users', async (req, res) => {
   await users
     .findOne({ Username: req.body.Username })
@@ -189,7 +211,7 @@ app.get('/users/:Username', async (req, res) => {
     });
 });
 
-// UPDATE Change user info
+// UPDATE Change user info, by user name
 
 /* We’ll expect JSON in this format
 {
