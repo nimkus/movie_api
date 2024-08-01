@@ -4,11 +4,10 @@ const express = require('express'),
   path = require('path'),
   bodyParser = require('body-parser'),
   methodOverride = require('method-override'),
-  uuid = require('uuid'),
   mongoose = require('mongoose');
 
 // Function to capitalize the first letter of a string
-function capitalizeFLetter(string) {
+function capitalize(string) {
   let capitalizedString = string[0].toUpperCase() + string.slice(1);
   return capitalizedString;
 }
@@ -71,6 +70,7 @@ app.get('/', (req, res) => {
 app.get('/movies', async (req, res) => {
   await movies
     .find()
+    .populate('genre director cast')
     .then((movies) => {
       res.status(201).json(movies);
     })
@@ -84,13 +84,13 @@ app.get('/movies', async (req, res) => {
 app.get('/movies/:title', async (req, res) => {
   await movies
     .findOne({ title: req.params.title })
-    .populate('genre')
+    .populate('genre director cast')
     .then((movie) => {
       if (movie) {
         res.status(200).json(movie);
       } else {
-        let movieTitle = capitalizeFLetter(req.params.title);
-        res.status(400).send('The movie "' + movieTitle + '" does not exist');
+        let movieTitle = capitalize(req.params.title);
+        res.status(400).send('The movie "' + movieTitle + '" does not exist.');
       }
     })
     .catch((err) => {
@@ -99,43 +99,102 @@ app.get('/movies/:title', async (req, res) => {
     });
 });
 
-//READ
-app.get('/movies/genres/:genreName', (req, res) => {
-  const { genreName } = req.params;
-  const genre = movies.find((movie) => movie.genre.name === genreName);
-
-  if (genre) {
-    res.status(200).json(genre.genre);
-  } else {
-    res.status(400).send('No such genre exists');
-  }
+// READ Get a list of all genres
+app.get('/movies/genres/all', async (req, res) => {
+  await genres
+    .find()
+    .then((genres) => {
+      res.status(201).json(genres);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send('Error: ' + err);
+    });
 });
 
-//READ
-app.get('/movies/directors/:directorName', (req, res) => {
-  const { directorName } = req.params;
-  const director = movies.find((movie) => movie.director.name === directorName);
+//READ Get info on a specific genre, by name
+app.get('/movies/genres/:genreName', async (req, res) => {
+  await genres
+    .findOne({ name: req.params.genreName })
+    .then((genre) => {
+      if (genre) {
+        res.status(201).json(genre);
+      } else {
+        let genreName = capitalize(req.params.genreName);
+        res.status(400).send('The genre "' + genreName + '" does not exist.');
+      }
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send('Error: ' + err);
+    });
+});
 
-  if (director) {
-    res.status(200).json(director.director);
-  } else {
-    res.status(400).send('No such director exists');
-  }
+// READ Get a list of all actors
+app.get('/movies/actors/all', async (req, res) => {
+  await cast
+    .find()
+    .then((actors) => {
+      res.status(201).json(actors);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send('Error: ' + err);
+    });
+});
+
+// READ Get info on a specific actor, by name
+app.get('/movies/actors/:actorName', async (req, res) => {
+  await cast
+    .findOne({ name: req.params.actorName })
+    .then((actor) => {
+      if (actor) {
+        res.status(201).json(actor);
+      } else {
+        let actorName = capitalize(req.params.actorName);
+        res.status(400).send('The actor "' + actorName + '" does not exist.');
+      }
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send('Error: ' + err);
+    });
+});
+
+// READ Get a list of all directors
+app.get('/movies/directors/all', async (req, res) => {
+  await directors
+    .find()
+    .then((directors) => {
+      res.status(201).json(directors);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send('Error: ' + err);
+    });
+});
+
+// READ Get info on a specific director, by name
+app.get('/movies/directors/:directorName', async (req, res) => {
+  await directors
+    .findOne({ name: req.params.directorName })
+    .then((director) => {
+      if (director) {
+        res.status(201).json(director);
+      } else {
+        let directorName = capitalize(req.params.directorName);
+        res.status(400).send('The actor "' + directorName + '" does not exist.');
+      }
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send('Error: ' + err);
+    });
 });
 
 // --> ENDPOINTS: User
 
 // CREATE – Add a new user
-
-/* Expected format
-{
-  Username: { type: string, required: true },
-  Password: { type: string, required: true },
-  Email: { type: string, required: true },
-  Birthday: Date,
-  FavoriteMovies: [{ type: mongoose.Schema.Types.ObjectId, ref: 'movies' }],
-}*/
-
 app.post('/users', async (req, res) => {
   await users
     .findOne({ Username: req.body.Username })
@@ -161,12 +220,12 @@ app.post('/users', async (req, res) => {
       }
     })
     .catch((err) => {
-      console.error(error);
+      console.error(err);
       res.status(500).send('Error: ' + err);
     });
 });
 
-// CREATE – Add a favorite movie to a user
+// CREATE – Add a favorite movie to a user, by ID
 app.post('/users/:username/:movieId', async (req, res) => {
   await users
     .findOneAndUpdate(
@@ -176,6 +235,7 @@ app.post('/users/:username/:movieId', async (req, res) => {
       },
       { new: true }
     )
+    .populate('FavoriteMovies')
     .then((updatedUser) => {
       res.json(updatedUser);
     })
@@ -185,10 +245,11 @@ app.post('/users/:username/:movieId', async (req, res) => {
     });
 });
 
-// READ – Show all users
+// READ Get a list of all users
 app.get('/users', async (req, res) => {
   await users
     .find()
+    .populate('FavoriteMovies')
     .then((users) => {
       res.status(201).json(users);
     })
@@ -198,10 +259,11 @@ app.get('/users', async (req, res) => {
     });
 });
 
-// READ – Show data of a specific user
+// READ Show data of a specific user
 app.get('/users/:Username', async (req, res) => {
   await users
     .findOne({ Username: req.params.Username })
+    .populate('FavoriteMovies')
     .then((user) => {
       res.json(user);
     })
@@ -212,16 +274,6 @@ app.get('/users/:Username', async (req, res) => {
 });
 
 // UPDATE Change user info, by user name
-
-/* We’ll expect JSON in this format
-{
-  Username: { type: string, required: true },
-  Password: { type: string, required: true },
-  Email: { type: string, required: true },
-  Birthday: Date,
-  FavoriteMovies: [{ type: mongoose.Schema.Types.ObjectId, ref: 'movies' }],
-}*/
-
 app.put('/users/:Username', async (req, res) => {
   await users
     .findOneAndUpdate(
@@ -236,6 +288,7 @@ app.put('/users/:Username', async (req, res) => {
       },
       { new: true } // This line makes sure that the updated document is returned
     )
+    .populate('FavoriteMovies')
     .then((updatedUser) => {
       res.json(updatedUser);
     })
@@ -245,39 +298,41 @@ app.put('/users/:Username', async (req, res) => {
     });
 });
 
-// DELETE Movie title
-app.delete('/users/:userId/:movieTitle', (req, res) => {
-  const { userId, movieTitle } = req.params;
-
-  let movie = movies.find((movie) => movie.title == movieTitle);
-  let user = users.find((user) => user.id == userId);
-
-  if (movie && user) {
-    // Check if movieTitle is part of the user array
-    const movExist = user.favMovies.filter((title) => title === movieTitle);
-    if (movExist.length !== 0) {
-      user.favMovies = user.favMovies.filter((title) => title !== movieTitle);
-      res.status(200).send(`${movieTitle} has been removed from the array of user ${userId}`);
-    } else {
-      res.status(400).send(`${movieTitle} exists, but is not a favorite of user ${userId}`);
-    }
-  } else {
-    res.status(400).send('User or movie does not exist.');
-  }
+// DELETE Remove a favorite movie from a user, by ID
+app.delete('/users/:Username/:movieId', async (req, res) => {
+  await users
+    .findOneAndUpdate(
+      { Username: req.params.Username },
+      {
+        $pull: { FavoriteMovies: req.params.movieId },
+      },
+      { new: true }
+    )
+    .populate('FavoriteMovies')
+    .then((updatedUser) => {
+      res.json(updatedUser);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send('Error: ' + err);
+    });
 });
 
-// DELETE User
-app.delete('/users/:userId', (req, res) => {
-  const { userId } = req.params;
-
-  let user = users.find((user) => user.id == userId);
-
-  if (user) {
-    users = users.filter((user) => user.id != userId);
-    res.status(200).send(`User ${userId} has been deleted.`);
-  } else {
-    res.status(400).send('No such user.');
-  }
+// DELETE remove user, by username
+app.delete('/users/:Username', async (req, res) => {
+  await users
+    .findOneAndRemove({ Username: req.params.Username })
+    .then((user) => {
+      if (!user) {
+        res.status(400).send(req.params.Username + ' was not found');
+      } else {
+        res.status(200).send(req.params.Username + ' was deleted.');
+      }
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send('Error: ' + err);
+    });
 });
 
 // catch-all error handling for application-level errors

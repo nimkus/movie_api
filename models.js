@@ -35,22 +35,22 @@ let directorSchema = mongoose.Schema({
 let castSchema = mongoose.Schema({
   name: { type: String, required: true },
   bio: { type: String },
-  dateOfBirth: Date,
-  movies: { type: String },
+  dateOfbirth: Date,
+  movies: [{ type: mongoose.Schema.Types.ObjectId, ref: 'movies' }],
 });
 
 // Model for data about Users
 let usersSchema = mongoose.Schema({
-  username: { type: String, required: true },
-  password: { type: String, required: true },
-  email: { type: String, required: true },
-  birthday: Date,
-  favoriteMovies: [{ type: mongoose.Schema.Types.ObjectId, ref: 'movies' }],
+  Username: { type: String, required: true },
+  Password: { type: String, required: true },
+  Email: { type: String, required: true },
+  Birthday: Date,
+  FavoriteMovies: [{ type: mongoose.Schema.Types.ObjectId, ref: 'movies' }],
 });
 
 const movies = mongoose.model('movies', moviesSchema),
   genre = mongoose.model('genres', genreSchema),
-  director = mongoose.model('director', directorSchema),
+  director = mongoose.model('directors', directorSchema),
   cast = mongoose.model('cast', castSchema),
   users = mongoose.model('users', usersSchema);
 
