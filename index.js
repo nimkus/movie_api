@@ -6,12 +6,6 @@ const express = require('express'),
   methodOverride = require('method-override'),
   mongoose = require('mongoose');
 
-// Function to capitalize the first letter of a string
-function capitalize(string) {
-  let capitalizedString = string[0].toUpperCase() + string.slice(1);
-  return capitalizedString;
-}
-
 // Integrating Mongoose Models
 const Models = require('./models.js');
 const { get } = require('http');
@@ -26,6 +20,65 @@ mongoose.connect('mongodb://localhost:27017/myFlixDB');
 
 // Calling Express
 const app = express();
+
+////////////////
+// FUNCTIONS //
+//////////////
+
+// FUNCTIONS TO MANIPULATE STRINGS
+
+// Function to capitalize the first letter of a string
+function capitalize(string) {
+  return string[0].toUpperCase() + string.slice(1);
+}
+
+// FUNCTIONS FOR ROUTING
+
+// Function to get a list of all items from a db collection, with option to populate entries
+function listAll(path, model, populateWith) {
+  app.get(path, async (req, res) => {
+    // path format: '/path'
+
+    await model
+      .find()
+      .populate(populateWith)
+      // format: 'fieldToPopulate1  fieldToPopulate2  fieldToPopulate3'
+      .then((list) => {
+        res.status(201).json(list);
+      })
+      .catch((err) => {
+        console.error(err);
+        res.status(500).send('Error: ' + err);
+      });
+  });
+}
+
+// Function to get single of a db collection, with option to populate entries
+function getSingleEntry(path, key, model, populateWith) {
+  app.get(path, async (req, res) => {
+    // path format: '/path/path/:entryName'
+
+    // Extract the single value from req.params
+    const paramValue = Object.values(req.params)[0];
+    let name = capitalize(paramValue);
+
+    await model
+      .findOne({ [key]: name })
+      .populate(populateWith)
+      // format: 'fieldToPopulate1  fieldToPopulate2  fieldToPopulate3'
+      .then((entry) => {
+        if (entry) {
+          res.status(201).json(entry);
+        } else {
+          res.status(400).send('"' + name + '" does not exist.');
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+        res.status(500).send('Error: ' + err);
+      });
+  });
+}
 
 //////////////
 // LOGGING //
@@ -64,135 +117,29 @@ app.get('/', (req, res) => {
   res.send('Welcome to our movie API!');
 });
 
-// --> ENDPOINTS: Movies
+// ENDPOINTS MOVIES
 
-// READ Get a list of all movies
-app.get('/movies', async (req, res) => {
-  await movies
-    .find()
-    .populate('genre director cast')
-    .then((movies) => {
-      res.status(201).json(movies);
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).send('Error: ' + err);
-    });
-});
+// READ – Get a list
+// of all movies
+listAll('/movies', movies, 'genre director cast');
+// of all genres
+listAll('/movies/genres/all', genres);
+// of all directors
+listAll('/movies/directors/all', directors);
+// of all actors
+listAll('/movies/actors/all', cast);
 
-// READ Get a single movie, by title
-app.get('/movies/:title', async (req, res) => {
-  await movies
-    .findOne({ title: req.params.title })
-    .populate('genre director cast')
-    .then((movie) => {
-      if (movie) {
-        res.status(200).json(movie);
-      } else {
-        let movieTitle = capitalize(req.params.title);
-        res.status(400).send('The movie "' + movieTitle + '" does not exist.');
-      }
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).send('Error: ' + err);
-    });
-});
+// READ – Get a single entry
+// specific movie, by title
+getSingleEntry('/movies/:title', 'title', movies, 'genre director cast');
+// specific genre, by name
+getSingleEntry('/movies/genres/:genreName', 'name', genres);
+// specific director, by name
+getSingleEntry('/movies/directors/:directorName', 'name', directors);
+// specific actor, by name
+getSingleEntry('/movies/actors/:actorName', 'name', cast);
 
-// READ Get a list of all genres
-app.get('/movies/genres/all', async (req, res) => {
-  await genres
-    .find()
-    .then((genres) => {
-      res.status(201).json(genres);
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).send('Error: ' + err);
-    });
-});
-
-//READ Get info on a specific genre, by name
-app.get('/movies/genres/:genreName', async (req, res) => {
-  await genres
-    .findOne({ name: req.params.genreName })
-    .then((genre) => {
-      if (genre) {
-        res.status(201).json(genre);
-      } else {
-        let genreName = capitalize(req.params.genreName);
-        res.status(400).send('The genre "' + genreName + '" does not exist.');
-      }
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).send('Error: ' + err);
-    });
-});
-
-// READ Get a list of all actors
-app.get('/movies/actors/all', async (req, res) => {
-  await cast
-    .find()
-    .then((actors) => {
-      res.status(201).json(actors);
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).send('Error: ' + err);
-    });
-});
-
-// READ Get info on a specific actor, by name
-app.get('/movies/actors/:actorName', async (req, res) => {
-  await cast
-    .findOne({ name: req.params.actorName })
-    .then((actor) => {
-      if (actor) {
-        res.status(201).json(actor);
-      } else {
-        let actorName = capitalize(req.params.actorName);
-        res.status(400).send('The actor "' + actorName + '" does not exist.');
-      }
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).send('Error: ' + err);
-    });
-});
-
-// READ Get a list of all directors
-app.get('/movies/directors/all', async (req, res) => {
-  await directors
-    .find()
-    .then((directors) => {
-      res.status(201).json(directors);
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).send('Error: ' + err);
-    });
-});
-
-// READ Get info on a specific director, by name
-app.get('/movies/directors/:directorName', async (req, res) => {
-  await directors
-    .findOne({ name: req.params.directorName })
-    .then((director) => {
-      if (director) {
-        res.status(201).json(director);
-      } else {
-        let directorName = capitalize(req.params.directorName);
-        res.status(400).send('The actor "' + directorName + '" does not exist.');
-      }
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).send('Error: ' + err);
-    });
-});
-
-// --> ENDPOINTS: User
+// ENDPOINTS USER
 
 // CREATE – Add a new user
 app.post('/users', async (req, res) => {
@@ -245,33 +192,11 @@ app.post('/users/:username/:movieId', async (req, res) => {
     });
 });
 
-// READ Get a list of all users
-app.get('/users', async (req, res) => {
-  await users
-    .find()
-    .populate('FavoriteMovies')
-    .then((users) => {
-      res.status(201).json(users);
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).send('Error: ' + err);
-    });
-});
+// READ – Get a list of all users
+listAll('/users', users, 'FavoriteMovies');
 
-// READ Show data of a specific user
-app.get('/users/:Username', async (req, res) => {
-  await users
-    .findOne({ Username: req.params.Username })
-    .populate('FavoriteMovies')
-    .then((user) => {
-      res.json(user);
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).send('Error: ' + err);
-    });
-});
+// READ – Get a single entry, specific user by name
+getSingleEntry('/users/:Username', 'Username', users, 'FavoriteMovies');
 
 // UPDATE Change user info, by user name
 app.put('/users/:Username', async (req, res) => {
