@@ -8,7 +8,6 @@ let moviesSchema = mongoose.Schema({
   year: { type: Number },
   genre: [{ type: mongoose.Schema.Types.ObjectId, ref: 'genres' }],
   director: [{ type: mongoose.Schema.Types.ObjectId, ref: 'directors' }],
-  cast: [{ type: mongoose.Schema.Types.ObjectId, ref: 'cast' }],
   imdb_rating: { type: Number },
   duration: { type: Number },
   language: { type: String },
@@ -31,7 +30,7 @@ let directorSchema = mongoose.Schema({
   date_of_death: Date,
 });
 
-// Model for data about the cast
+// Model for data about the actors
 let castSchema = mongoose.Schema({
   name: { type: String, required: true },
   bio: { type: String },
@@ -41,21 +40,19 @@ let castSchema = mongoose.Schema({
 
 // Model for data about Users
 let usersSchema = mongoose.Schema({
-  Username: { type: String, required: true },
-  Password: { type: String, required: true },
-  Email: { type: String, required: true },
-  Birthday: Date,
-  FavoriteMovies: [{ type: mongoose.Schema.Types.ObjectId, ref: 'movies' }],
+  username: { type: String, required: true },
+  password: { type: String, required: true },
+  email: { type: String, required: true },
+  birthday: Date,
+  favMovies: [{ type: mongoose.Schema.Types.ObjectId, ref: 'movies' }],
 });
 
 const movies = mongoose.model('movies', moviesSchema),
-  genre = mongoose.model('genres', genreSchema),
-  director = mongoose.model('directors', directorSchema),
-  cast = mongoose.model('cast', castSchema),
+  genres = mongoose.model('genres', genreSchema),
+  directors = mongoose.model('directors', directorSchema),
   users = mongoose.model('users', usersSchema);
 
 module.exports.movies = movies;
-module.exports.genres = genre;
-module.exports.directors = director;
-module.exports.cast = cast;
+module.exports.genres = genres;
+module.exports.directors = directors;
 module.exports.users = users;
