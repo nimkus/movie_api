@@ -547,3 +547,4 @@
 ::1 - - [02/Aug/2024:13:47:08 +0000] "POST /users/Testoteles/66a776245e370b651b8dabe5 HTTP/1.1" 200 1085 "-" "PostmanRuntime/7.40.0"
 ::1 - - [02/Aug/2024:13:47:27 +0000] "DELETE /users/Testoteles/66a776245e370b651b8dabe5 HTTP/1.1" 200 642 "-" "PostmanRuntime/7.40.0"
 ::1 - - [02/Aug/2024:13:47:33 +0000] "GET /users/Testoteles HTTP/1.1" 201 642 "-" "PostmanRuntime/7.40.0"
+::1 - - [03/Aug/2024:14:24:01 +0000] "GET /users/Testoteles HTTP/1.1" 201 642 "-" "PostmanRuntime/7.40.0"
