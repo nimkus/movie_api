@@ -34,7 +34,7 @@ function capitalize(string) {
 
 // Function to get a list of all items from a db collection, with option to populate entries
 function listAll(routePath, model, populateWith) {
-  app.get(routePath, async (req, res) => {
+  app.get(routePath, passport.authenticate('jwt', { session: false }), async (req, res) => {
     try {
       const list = await model.find().populate(populateWith);
       res.status(201).json(list);
@@ -47,7 +47,7 @@ function listAll(routePath, model, populateWith) {
 
 // Function to get single of a db collection, with option to populate entries
 function getSingleEntry(routePath, key, model, populateWith) {
-  app.get(routePath, async (req, res) => {
+  app.get(routePath, passport.authenticate('jwt', { session: false }), async (req, res) => {
     const paramValue = Object.values(req.params)[0];
     const name = capitalize(paramValue);
 
@@ -94,7 +94,18 @@ app.use('/', express.static('public'));
 // APP ROUTING //
 ////////////////
 
-//  ------ ENDPOINTS HOME ------
+//  ------ ENDPOINTS LOGIN ------
+
+// Login for users, generating a JWT as users log in
+let auth = require('./auth')(app);
+console.log(auth);
+
+// Logic for authenticating users
+const passport = require('passport');
+require('./passport');
+console.log(passport);
+
+//  ------ ENDPOINT HOME ------
 
 // READ – Get a welcome message, homepage
 app.get('/', (req, res) => {
@@ -144,7 +155,7 @@ app.post('/users', async (req, res) => {
 });
 
 // CREATE – Add a favorite movie to a user, by ID
-app.post('/users/:username/:movieId', async (req, res) => {
+app.post('/users/:username/:movieId', passport.authenticate('jwt', { session: false }), async (req, res) => {
   try {
     const updatedUser = await users
       .findOneAndUpdate(
@@ -167,7 +178,11 @@ listAll('/users', users, 'favMovies');
 getSingleEntry('/users/:username', 'username', users, 'favMovies');
 
 // UPDATE Change user info, by user name
-app.put('/users/:username', async (req, res) => {
+app.put('/users/:username', passport.authenticate('jwt', { session: false }), async (req, res) => {
+  // users can only edit their own user info
+  if (req.user.username !== req.params.username) {
+    return res.status(400).send('Permission denied');
+  }
   try {
     const updatedUser = await users
       .findOneAndUpdate(
@@ -191,7 +206,7 @@ app.put('/users/:username', async (req, res) => {
 });
 
 // DELETE – Remove user, by username
-app.delete('/users/:username', async (req, res) => {
+app.delete('/users/:username', passport.authenticate('jwt', { session: false }), async (req, res) => {
   try {
     const user = await users.findOneAndDelete({ username: req.params.username });
     if (!user) {
@@ -206,7 +221,7 @@ app.delete('/users/:username', async (req, res) => {
 });
 
 // DELETE – Remove a favorite movie from a user, by ID
-app.delete('/users/:username/:movieId', async (req, res) => {
+app.delete('/users/:username/:movieId', passport.authenticate('jwt', { session: false }), async (req, res) => {
   try {
     const updatedUser = await users
       .findOneAndUpdate({ username: req.params.username }, { $pull: { favMovies: req.params.movieId } }, { new: true })

@@ -8,12 +8,12 @@ let users = Models.users,
   ExtractJWT = passportJWT.ExtractJwt;
 
 // LocalStrategy
-// username and password from request body --> check db thorugh Mongoose for a user with the same username
+// db is checked for a user with username and password from request body
 passport.use(
   new LocalStrategy(
     {
       usernameField: 'username',
-      passwordField: 'Password',
+      passwordField: 'password',
     },
     async (username, password, callback) => {
       console.log(`${username} ${password}`);
