@@ -9,27 +9,40 @@ let users = Models.users,
 
 // LocalStrategy
 // db is checked for a user with username and password from request body
+
 passport.use(
   new LocalStrategy(
     {
-      usernameField: 'username',
-      passwordField: 'password',
+      usernameField: 'Username', // Map 'Username' field from the request body
+      passwordField: 'Password', // Map 'Password' field from the request body
     },
     async (username, password, callback) => {
-      console.log(`${username} ${password}`);
       try {
-        const user = await users.findOne({ username: username });
+        // Log user login attempt, without exposing sensitive data
+        console.log(`Login attempt for user: ${username}`);
+
+        // Find user in the database by username
+        const user = await users.findOne({ Username: username });
+
         if (!user) {
-          console.log('Incorrect username');
-          return callback(null, false, {
-            message: 'Incorrect username or password.',
-          });
+          // Log the issue without exposing sensitive data
+          console.log('Login failed: Incorrect username');
+          return callback(null, false, { message: 'Incorrect username or password.' });
         }
-        console.log('Authentication successful.');
-        return callback(null, user);
-      } catch (err) {
-        console.error('Error during authentication:', err);
-        return callback(err);
+
+        // Ensure validatePassword is asynchronous if bcrypt is used
+        const isValidPassword = await user.validatePassword(password);
+        if (!isValidPassword) {
+          console.log('Login failed: Incorrect password');
+          return callback(null, false, { message: 'Incorrect username or password.' });
+        }
+
+        // Log successful login
+        console.log('Login successful');
+        return callback(null, user); // Proceed with user authentication
+      } catch (error) {
+        console.error('Error during authentication:', error);
+        return callback(error); // Pass the error to the callback for handling
       }
     }
   )

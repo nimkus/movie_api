@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
 
 // DEFINING DATA SCHEMAS
 
@@ -47,6 +48,42 @@ let usersSchema = mongoose.Schema({
   favMovies: [{ type: mongoose.Schema.Types.ObjectId, ref: 'movies' }],
 });
 
+// HASHING AND VALIDATING USER PASSWORD
+
+// Configure different salt rounds based on the environment
+const SALT_ROUNDS = process.env.NODE_ENV === 'production' ? 12 : 8; // Higher rounds for production, lower for development
+
+// Asynchronous password hashing
+usersSchema.statics.hashPassword = async function (password) {
+  if (!password) {
+    throw new Error('Password cannot be empty'); // Validate that the password is provided
+  }
+
+  try {
+    // Generate a salt asynchronously, ensure SALT_ROUNDS is a number
+    const salt = await bcrypt.genSalt(parseInt(SALT_ROUNDS));
+    if (!salt) {
+      throw new Error('Salt generation failed'); // Check if salt generation was successful
+    }
+
+    // Hash the password using the salt
+    const hashedPassword = await bcrypt.hash(password, salt); // Hashing the password
+    return hashedPassword;
+  } catch (error) {
+    throw new Error('Error hashing password: ' + error.message); // Improved error handling
+  }
+};
+
+// Asynchronous password validation
+usersSchema.methods.validatePassword = async function (password) {
+  try {
+    return await bcrypt.compare(password, this.Password); // Compare the provided password with the hashed one asynchronously
+  } catch (error) {
+    throw new Error('Error validating password'); // Handle any errors during password comparison
+  }
+};
+
+// CREATING AND EXPORTING MONGOOSE MODELS
 const movies = mongoose.model('movies', moviesSchema),
   genres = mongoose.model('genres', genreSchema),
   directors = mongoose.model('directors', directorSchema),

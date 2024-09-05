@@ -10,9 +10,10 @@ const express = require('express'),
   methodOverride = require('method-override'),
   mongoose = require('mongoose'),
   Models = require('./models.js'),
-  { get } = require('http');
+  { get } = require('http'),
+  bcrypt = require('bcrypt');
 
-// Integrating Mongoose Models
+// Integrating Mongoose models
 const { movies, genres, directors, users } = Models;
 mongoose.connect('mongodb://localhost:27017/myFlixDB');
 
@@ -94,7 +95,39 @@ app.use('/', express.static('public'));
 // APP ROUTING //
 ////////////////
 
-//  ------ ENDPOINTS LOGIN ------
+// Using CORS (Cross-origin resource sharing)
+const cors = require('cors');
+
+// Load allowed origins from environment variables, allowing flexibility across environments.
+let allowedOrigins = ['http://localhost:8080', 'https://localhost:8080'];
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // If no origin is provided (e.g., server-to-server communication), deny by default
+      if (!origin) {
+        return callback(null, true);
+        //return callback(new Error('CORS policy doesn’t allow access from unspecified origins'), false);
+      }
+
+      // Check if the origin is in the allowed list
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true); // Allow request if origin is allowed
+      } else {
+        // Logging for better debugging and tracking
+        console.log(`CORS policy blocked request from origin: ${origin}`);
+        // Custom error message but avoid exposing the exact origin in production for security
+        const message =
+          process.env.NODE_ENV === 'production'
+            ? 'CORS policy blocked this request'
+            : `The CORS policy for this application doesn’t allow access from origin ${origin}`;
+
+        return callback(new Error(message), false);
+      }
+    },
+    optionsSuccessStatus: 200, // Some browsers (IE11, older versions of Chrome) may return status 204 by default
+  })
+);
 
 // Login for users, generating a JWT as users log in
 let auth = require('./auth')(app);
@@ -134,7 +167,10 @@ getSingleEntry('/movies/directors/:directorName', 'name', directors);
 
 // CREATE – Add a new user
 app.post('/users', async (req, res) => {
+  let hashedPassword = await users.hashPassword(req.body.password);
+
   try {
+    // check if a user with the requested username already exists
     const existingUser = await users.findOne({ username: req.body.username });
     if (existingUser) {
       return res.status(400).send(`${req.body.username} already exists`);
@@ -142,7 +178,7 @@ app.post('/users', async (req, res) => {
 
     const newUser = await users.create({
       username: req.body.username,
-      password: req.body.password,
+      password: hashedPassword,
       email: req.body.email,
       birthday: req.body.birthday,
       favMovies: req.body.favMovies,
