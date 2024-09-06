@@ -13,8 +13,8 @@ let users = Models.users,
 passport.use(
   new LocalStrategy(
     {
-      usernameField: 'Username', // Map 'Username' field from the request body
-      passwordField: 'Password', // Map 'Password' field from the request body
+      usernameField: 'username', // Map 'Username' field from the request body
+      passwordField: 'password', // Map 'Password' field from the request body
     },
     async (username, password, callback) => {
       try {
@@ -22,7 +22,7 @@ passport.use(
         console.log(`Login attempt for user: ${username}`);
 
         // Find user in the database by username
-        const user = await users.findOne({ Username: username });
+        const user = await users.findOne({ username: username });
 
         if (!user) {
           // Log the issue without exposing sensitive data

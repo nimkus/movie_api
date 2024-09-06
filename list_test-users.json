@@ -1,0 +1,24 @@
+{
+  "username": "EllenRipley",
+  "password": "AlienHunter$99",
+  "email": "ellen.ripley@weylandcorp.com",
+  "birthday": "2092-01-07",
+  "favMovies": []
+},
+{
+  "username": "DianaPrince",
+  "password": "AmazonWarrior1!",
+  "email": "diana.prince@themyscira.com",
+  "birthday": "1920-02-13",
+  "favMovies": []
+},
+{
+  "username": "NatashaRomanoff",
+  "password": "BlackWidow$23",
+  "password": "$2b$08$jAiiAETUv8oPJzdfab0/.eb.a6CBJ2647q8j5ms2XqkO7tYc6.MZq",
+  "email": "natasha.romanoff@avengers.com",
+  "birthday": "1984-11-22T00:00:00.000Z",
+  "favMovies": [],
+  "_id": "66dae71e1f56ace579a782f5",
+  "__v": 0
+}

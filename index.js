@@ -11,7 +11,8 @@ const express = require('express'),
   mongoose = require('mongoose'),
   Models = require('./models.js'),
   { get } = require('http'),
-  bcrypt = require('bcrypt');
+  bcrypt = require('bcrypt'),
+  { check, validationResult } = require('express-validator');
 
 // Integrating Mongoose models
 const { movies, genres, directors, users } = Models;
@@ -104,9 +105,9 @@ let allowedOrigins = ['http://localhost:8080', 'https://localhost:8080'];
 app.use(
   cors({
     origin: (origin, callback) => {
-      // If no origin is provided (e.g., server-to-server communication), deny by default
       if (!origin) {
         return callback(null, true);
+        //If no origin is provided (e.g., server-to-server communication), deny by default
         //return callback(new Error('CORS policy doesn’t allow access from unspecified origins'), false);
       }
 
@@ -128,6 +129,8 @@ app.use(
     optionsSuccessStatus: 200, // Some browsers (IE11, older versions of Chrome) may return status 204 by default
   })
 );
+
+//  ------ ENDPOINT LOGIN ------
 
 // Login for users, generating a JWT as users log in
 let auth = require('./auth')(app);
@@ -166,29 +169,68 @@ getSingleEntry('/movies/directors/:directorName', 'name', directors);
 // ------ ENDPOINTS USER ------
 
 // CREATE – Add a new user
-app.post('/users', async (req, res) => {
-  let hashedPassword = await users.hashPassword(req.body.password);
+/* expected format:
+  username: { type: String, required: true },
+  password: { type: String, required: true },
+  email: { type: String, required: true },
+  birthday: Date,
+  favMovies: [{ type: mongoose.Schema.Types.ObjectId, ref: 'movies' }], */
 
-  try {
-    // check if a user with the requested username already exists
-    const existingUser = await users.findOne({ username: req.body.username });
-    if (existingUser) {
-      return res.status(400).send(`${req.body.username} already exists`);
+app.post(
+  '/users',
+  [
+    check('username', 'Username must have at least 5 characters.').isLength({ min: 5 }),
+    check('username', 'Username contains non-alphanumeric characters. Not Allowed.').isAlphanumeric(),
+    check(
+      'password',
+      'Password must include one lowercase character, one uppercase character, a number, and a special character.'
+    ).isStrongPassword({
+      minLength: 8,
+      minLowercase: 1,
+      minUppercase: 1,
+      minNumbers: 1,
+      minSymbols: 1,
+      returnScore: false,
+      pointsPerUnique: 1,
+      pointsPerRepeat: 0.5,
+      pointsForContainingLower: 10,
+      pointsForContainingUpper: 10,
+      pointsForContainingNumber: 10,
+      pointsForContainingSymbol: 10,
+    }),
+    check('email', 'Email does not appear to be valid').isEmail(),
+  ],
+  async (req, res) => {
+    // check validation object for errors
+    let errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ errors: errors.array() });
     }
+    // Hash password input
+    let hashedPassword = await users.hashPassword(req.body.password);
 
-    const newUser = await users.create({
-      username: req.body.username,
-      password: hashedPassword,
-      email: req.body.email,
-      birthday: req.body.birthday,
-      favMovies: req.body.favMovies,
-    });
-    res.status(201).json(newUser);
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Error: ' + err);
+    try {
+      // check if a user with the requested username already exists
+      const existingUser = await users.findOne({ username: req.body.username });
+      if (existingUser) {
+        return res.status(400).send(`${req.body.username} already exists`);
+      }
+
+      const newUser = await users.create({
+        username: req.body.username,
+        password: hashedPassword,
+        email: req.body.email,
+        birthday: req.body.birthday,
+        favMovies: req.body.favMovies,
+      });
+      res.status(201).json(newUser);
+    } catch (err) {
+      console.error(err);
+      res.status(500).send('Error: ' + err);
+    }
   }
-});
+);
 
 // CREATE – Add a favorite movie to a user, by ID
 app.post('/users/:username/:movieId', passport.authenticate('jwt', { session: false }), async (req, res) => {
@@ -276,6 +318,7 @@ app.use((err, req, res, next) => {
 });
 
 // Port
-app.listen(8080, () => {
-  console.log('Your app ist listening on port 8080.');
+const port = process.env.PORT || 8080;
+app.listen(port, '0.0.0.0', () => {
+  console.log('Listening on Port ' + port);
 });

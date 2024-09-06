@@ -77,9 +77,11 @@ usersSchema.statics.hashPassword = async function (password) {
 // Asynchronous password validation
 usersSchema.methods.validatePassword = async function (password) {
   try {
-    return await bcrypt.compare(password, this.Password); // Compare the provided password with the hashed one asynchronously
+    // Compare the provided password with the hashed one asynchronously
+    return await bcrypt.compare(password, this.password);
   } catch (error) {
-    throw new Error('Error validating password'); // Handle any errors during password comparison
+    // Handle any errors during password comparison
+    throw new Error('Error validating password: ' + error.message);
   }
 };
 
