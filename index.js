@@ -16,7 +16,10 @@ const express = require('express'),
 
 // Integrating Mongoose models
 const { movies, genres, directors, users } = Models;
-mongoose.connect('mongodb://localhost:27017/myFlixDB');
+
+// Connect to database
+mongoose.connect('process.env.CONNECTION_URI'); // Heroku
+//mongoose.connect('mongodb://localhost:27017/myFlixDB');  // local
 
 // Calling Express
 const app = express();
