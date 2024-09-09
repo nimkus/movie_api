@@ -18,8 +18,26 @@ const express = require('express'),
 const { movies, genres, directors, users } = Models;
 
 // Connect to database
-mongoose.connect('process.env.CONNECTION_URI'); // Heroku
+//mongoose.connect('process.env.CONNECTION_URI'); // Heroku
 //mongoose.connect('mongodb://localhost:27017/myFlixDB');  // local
+
+// Function to connect to MongoDB
+async function connectToDatabase() {
+  try {
+    // Attempt to connect to MongoDB using the connection URI from environment variables
+    await mongoose.connect(process.env.CONNECTION_URI, {
+      useNewUrlParser: true, // Recommended to avoid deprecation warnings
+      useUnifiedTopology: true, // Recommended for new MongoDB drivers
+    });
+    console.log('Successfully connected to MongoDB!');
+  } catch (error) {
+    // Catch and log any error that occurs during the connection attempt
+    console.error('Error connecting to MongoDB:', error.message);
+  }
+}
+
+// Call the function to connect when the app starts
+connectToDatabase();
 
 // Calling Express
 const app = express();
