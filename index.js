@@ -175,7 +175,7 @@ listAll('/movies/genres/all', genres);
 // of all directors
 listAll('/movies/directors/all', directors);
 // of all actors
-listAll('/movies/actors/all', actors);
+listAll('/movies/actors/all', actors, 'movies');
 
 // READ – Get a single entry
 // specific movie, by title
