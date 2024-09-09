@@ -89,7 +89,7 @@ usersSchema.methods.validatePassword = async function (password) {
 const movies = mongoose.model('movies', moviesSchema),
   genres = mongoose.model('genres', genreSchema),
   directors = mongoose.model('directors', directorSchema),
-  cast = ('cast', castSchema),
+  cast = mongoose.model('cast', castSchema),
   users = mongoose.model('users', usersSchema);
 
 module.exports.movies = movies;
