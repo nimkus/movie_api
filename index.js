@@ -15,7 +15,7 @@ const express = require('express'),
   { check, validationResult } = require('express-validator');
 
 // Integrating Mongoose models
-const { movies, genres, directors, cast, users } = Models;
+const { movies, genres, directors, actors, users } = Models;
 
 // Function to connect to MongoDB
 async function connectToDatabase() {
@@ -175,7 +175,7 @@ listAll('/movies/genres/all', genres);
 // of all directors
 listAll('/movies/directors/all', directors);
 // of all actors
-listAll('/movies/cast/all', cast);
+listAll('/movies/actors/all', actors);
 
 // READ – Get a single entry
 // specific movie, by title
@@ -185,7 +185,7 @@ getSingleEntry('/movies/genres/:genreName', 'name', genres);
 // specific director, by name
 getSingleEntry('/movies/directors/:directorName', 'name', directors);
 // specific actor, by name
-getSingleEntry('/movies/cast/:actorName', 'name', cast);
+getSingleEntry('/movies/actors/:actorName', 'name', actors);
 
 // ------ ENDPOINTS USER ------
 
