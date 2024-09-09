@@ -17,14 +17,11 @@ const express = require('express'),
 // Integrating Mongoose models
 const { movies, genres, directors, users } = Models;
 
-// Connect to database
-//mongoose.connect('process.env.CONNECTION_URI'); // Heroku
-//mongoose.connect('mongodb://localhost:27017/myFlixDB');  // local
-
 // Function to connect to MongoDB
 async function connectToDatabase() {
   try {
     // Attempt to connect to MongoDB using the connection URI from environment variables
+    //use "mongoose.connect('mongodb://localhost:27017/myFlixDB')" to connect to local db
     await mongoose.connect(process.env.CONNECTION_URI, {
       useNewUrlParser: true, // Recommended to avoid deprecation warnings
       useUnifiedTopology: true, // Recommended for new MongoDB drivers
@@ -36,7 +33,7 @@ async function connectToDatabase() {
   }
 }
 
-// Call the function to connect when the app starts
+// Connect to MongoDB
 connectToDatabase();
 
 // Calling Express
@@ -72,7 +69,7 @@ function listAll(routePath, model, populateWith) {
 function getSingleEntry(routePath, key, model, populateWith) {
   app.get(routePath, passport.authenticate('jwt', { session: false }), async (req, res) => {
     const paramValue = Object.values(req.params)[0];
-    const name = capitalize(paramValue);
+    const name = paramValue;
 
     try {
       const entry = await model.findOne({ [key]: name }).populate(populateWith);
