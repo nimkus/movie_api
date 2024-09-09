@@ -68,8 +68,7 @@ function listAll(routePath, model, populateWith) {
 // Function to get single of a db collection, with option to populate entries
 function getSingleEntry(routePath, key, model, populateWith) {
   app.get(routePath, passport.authenticate('jwt', { session: false }), async (req, res) => {
-    const paramValue = Object.values(req.params)[0];
-    const name = paramValue;
+    const name = Object.values(req.params)[0];
 
     try {
       const entry = await model.findOne({ [key]: name }).populate(populateWith);
