@@ -28,7 +28,7 @@ const app = express();
 // FUNCTIONS //
 //////////////
 
-// FUNCTIONS TO MANIPULATE STRINGS
+// FUNCTION TO MANIPULATE STRINGS
 
 // Function to capitalize the first letter of a string
 function capitalize(string) {

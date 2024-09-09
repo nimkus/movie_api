@@ -669,3 +669,4 @@
 ::1 - - [06/Sep/2024:14:17:06 +0000] "GET /movies/directors/Christopher%20Nolan HTTP/1.1" 401 - "-" "PostmanRuntime/7.41.2"
 ::1 - - [06/Sep/2024:14:17:10 +0000] "GET /movies/actors/Morgan%20Freeman HTTP/1.1" 404 169 "-" "PostmanRuntime/7.41.2"
 ::1 - - [06/Sep/2024:14:17:18 +0000] "GET /movies/directors/all HTTP/1.1" 401 - "-" "PostmanRuntime/7.41.2"
+127.0.0.1 - - [09/Sep/2024:10:01:48 +0000] "POST /login?username=DianaPrince&password=AmazonWarrior1! HTTP/1.1" 200 715 "-" "PostmanRuntime/7.41.2"
