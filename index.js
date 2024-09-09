@@ -254,7 +254,7 @@ app.post(
 );
 
 // CREATE – Add a favorite movie to a user, by ID
-app.post('/users/:username/:movieId', passport.authenticate('jwt', { session: false }), async (req, res) => {
+app.put('/users/:username/:movieId', passport.authenticate('jwt', { session: false }), async (req, res) => {
   try {
     const updatedUser = await users
       .findOneAndUpdate(
