@@ -184,6 +184,8 @@ getSingleEntry('/movies/:title', 'title', movies, 'genre director');
 getSingleEntry('/movies/genres/:genreName', 'name', genres);
 // specific director, by name
 getSingleEntry('/movies/directors/:directorName', 'name', directors);
+// specific actor, by name
+getSingleEntry('/movies/directors/:actorName', 'name', cast);
 
 // ------ ENDPOINTS USER ------
 
