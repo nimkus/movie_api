@@ -151,12 +151,10 @@ app.use(
 
 // Login for users, generating a JWT as users log in
 let auth = require('./auth')(app);
-console.log(auth);
 
 // Logic for authenticating users
 const passport = require('passport');
 require('./passport');
-console.log(passport);
 
 //  ------ ENDPOINT HOME ------
 
