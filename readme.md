@@ -8,8 +8,6 @@ A movie API system providing movie and user management with features like authen
 - [Technologies](#technologies)
 - [Setup](#setup)
 - [API Endpoints](#api-endpoints)
-- [Usage](#usage)
-- [License](#license)
 
 ## Features
 
@@ -30,25 +28,27 @@ A movie API system providing movie and user management with features like authen
 - **Bcrypt**: Password hashing.
 
 ## View Live
-https://movie-api-4o5a.onrender.com/
+
+https://nimkus-movies-flix-6973780b155e.herokuapp.com/
 
 ## API Endpoints
+
 Movies
+
 - Get all movies: GET /movies
 - Get a movie by title: GET /movies/:title
-- Get movies by genre: GET /movies/genre/:name
-- Get a director by name: GET /director/:name
+- Get all genres: GET movies/genres/all
+- Get movies by genre: GET /movies/genres/:name
+- Get all directors: GET movies/directors/all
+- Get a director by name: GET movies/directors/:name
+- Get all actors: GET movies/actors/all
+- Get a actor by name: GET movies/actors/:name
 
 Users
+
 - Get all users: GET /users
 - Create a user: POST /users
 - Update a user: PUT /users/:username
 - Delete a user: DELETE /users/:username
-- Add movie to favorites: POST /users/:username/movies/:MovieID
-- Remove movie from favorites: DELETE /users/:username/movies/:MovieID
-
-## Usage
-Explore the API at http://localhost:8080/docs once the server is running.
-
-## License
-MIT License - see the LICENSE file for details.
+- Add movie to favorites: PUT /users/:username/movies/:movieId
+- Remove movie from favorites: DELETE /users/:username/movies/:movieId
