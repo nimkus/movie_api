@@ -14,7 +14,6 @@ A movie API system providing movie and user management with features like authen
 - **Movies API**: Access movie details.
 - **User Management**: Manage users and their favorite movies.
 - **Authentication**: JWT-based security.
-- **Swagger Documentation**: Interactive API docs.
 - **Data Validation**: Ensures data integrity.
 
 ## Technologies
