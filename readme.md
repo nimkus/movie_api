@@ -49,5 +49,5 @@ Users
 - Create a user: POST /users
 - Update a user: PUT /users/:username
 - Delete a user: DELETE /users/:username
-- Add movie to favorites: PUT /users/:username/movies/:movieId
-- Remove movie from favorites: DELETE /users/:username/movies/:movieId
+- Add movie to favorites: PUT /users/:username/:movieId
+- Remove movie from favorites: DELETE /users/:username/:movieId

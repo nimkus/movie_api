@@ -167,7 +167,7 @@ app.get('/', (req, res) => {
 
 // READ – Get a list
 // of all movies
-listAll('/movies', movies, 'genre director');
+listAll('/movies', movies, 'genre director actors');
 // of all genres
 listAll('/movies/genres/all', genres);
 // of all directors
@@ -199,7 +199,7 @@ app.post(
   '/users',
   [
     check('username', 'Username must have at least 5 characters.').isLength({ min: 5 }),
-    check('username', 'Username contains non-alphanumeric characters. Not Allowed.').isAlphanumeric(),
+    check('username', 'Username contains non-alphanumeric characters. Not allowed.').isAlphanumeric(),
     check(
       'password',
       'Password must include one lowercase character, one uppercase character, a number, and a special character.'

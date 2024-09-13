@@ -9,6 +9,7 @@ let moviesSchema = mongoose.Schema({
   year: { type: Number },
   genre: [{ type: mongoose.Schema.Types.ObjectId, ref: 'genres' }],
   director: [{ type: mongoose.Schema.Types.ObjectId, ref: 'directors' }],
+  cast: [{ type: mongoose.Schema.Types.ObjectId, ref: 'actors' }],
   imdb_rating: { type: Number },
   duration: { type: Number },
   language: { type: String },
