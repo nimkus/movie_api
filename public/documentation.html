@@ -16,10 +16,14 @@
       h3 {
         color: #333;
       }
+      .blue-text {
+        color: blue;
+      }
       code {
         background-color: #eaeaea;
         padding: 2px 4px;
         font-size: 0.9em;
+        color: #333;
       }
       pre {
         background-color: #eaeaea;
@@ -27,12 +31,31 @@
         border-radius: 5px;
         overflow-x: auto;
       }
-      .endpoint {
+      .table-container {
         background-color: #fff;
         padding: 20px;
         margin: 20px 0;
         border-radius: 5px;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 10px;
+        border-bottom: 1px solid #ddd;
+      }
+      th {
+        background-color: #ddd;
+      }
+      /* Section Dividers */
+      tr.section-header {
+        background-color: #f4f4f4;
+        font-weight: bold;
       }
     </style>
   </head>
@@ -40,16 +63,14 @@
     <h1>Movie API Documentation</h1>
     <p>
       Welcome to the documentation for the MyFlix-Movie API. This web application provides users with access to
-      information about different movies, directors, genres, and actors. Furthermore, users can sign up, login, update
-      their personal information, and create a list of their favorite movies. Below you'll find all the necessary
-      information regarding available endpoints, models, and usage examples.
+      information about movies, directors, and genres. Users can also sign up, log in, update their information, and
+      create a list of favorite movies.
     </p>
 
     <h2>Table of Contents</h2>
     <ul>
       <li><a href="#app-setup">App Setup</a></li>
       <li><a href="#endpoints">Endpoints</a></li>
-      <li><a href="#models">Models</a></li>
       <li><a href="#authentication">Authentication</a></li>
     </ul>
 
@@ -59,180 +80,112 @@
       logging, and CORS.
     </p>
 
-    <h3>Environment Variables</h3>
-    <p>
-      The app connects to MongoDB using a connection string provided through the
-      <code>process.env.CONNECTION_URI</code>. Ensure you have your environment variables set correctly for production
-      and development.
-    </p>
-
-    <pre><code>CONNECTION_URI=mongodb+srv://user:password@cluster.mongodb.net/myFlixDB</code></pre>
-
     <h2 id="endpoints">Endpoints</h2>
 
-    <h3>Login</h3>
-    <div class="endpoint">
-      <h4>POST /login</h4>
-      <p>This endpoint allows users to log in and receive a JWT for further authentication.</p>
-      <h5>Request Payload:</h5>
-      <pre><code>{
-  "username": "johnDoe",  // Username must have at least 5 characters. Non-alphanumeric characters are not allowed.
-  "password": "Password123!"  // Password must include one lowercase character, one uppercase character, a number, and a special character.
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>ENDPOINTS</th>
+            <th>(EXAMPLE) REQUEST PAYLOAD</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Login Section Header -->
+          <tr class="section-header">
+            <td colspan="2">Login Endpoints</td>
+          </tr>
+          <tr>
+            <td>
+              <strong>POST /login</strong><br />Allows users to log in and receive a JWT for further authentication.
+            </td>
+            <td>
+              <pre><code>{
+  "username": "johnDoe",
+  "password": "Password123!"
 }</code></pre>
-      <h5>Response Example:</h5>
-      <pre><code>{
-  "user": {
-    "_id": "66ded5cafff6bedbb5827849",
-    "username": "johnDoe",
-    "password": "$2b$12$0o.0OBFjyQImT08wicAeQOvLkjwqv7HoiAfEa3qeymm/mxnW25bL2",
-    "email": "johndoe@example.com",
-    "favMovies": [
-            "66a776245e370b651b8dabe4"
-        ],
-        "__v": 0
-  },
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-}</code></pre>
-    </div>
+            </td>
+          </tr>
 
-    <h3>Movies</h3>
-    <div class="endpoint">
-      <h4>GET /movies</h4>
-      <p>Returns a list of all movies.</p>
-      <h5>Response Example:</h5>
-      <pre><code>[
-  {
-    "_id": "66a776245e370b651b8dabe3",
-    "title": "The Godfather",
-    "year": 1972,
-    "genre": [],
-    "director": [],
-    "imdb_rating": 9.2,
-    "duration": 175,
-    "language": "English",
-    "description": "The aging patriarch of an organized crime dynasty transfers control of his clandestine empire to his reluctant son.",
-    "imagePath": "/images/the_godfather.jpg",
-    "featured": false
-  }
-]</code></pre>
-    </div>
+          <!-- Movies Section Header -->
+          <tr class="section-header">
+            <td colspan="2">Movie Endpoints</td>
+          </tr>
+          <tr>
+            <td><strong>GET /movies</strong><br />Returns a list of all movies.</td>
+            <td>N/A</td>
+          </tr>
+          <tr>
+            <td><strong>GET /movies/:title</strong><br />Returns a specific movie by title.<br /></td>
+            <td>N/A</td>
+          </tr>
+          <tr>
+            <td><strong>GET /movies/directors/all</strong><br />Returns a list of all directors.</td>
+            <td>N/A</td>
+          </tr>
+          <tr>
+            <td><strong>GET /movies/directors/:name</strong><br />Returns a specific director by name.</td>
+            <td>N/A</td>
+          </tr>
+          <tr>
+            <td><strong>GET /movies/genres/all</strong><br />Returns a list of all genres.</td>
+            <td>N/A</td>
+          </tr>
+          <tr>
+            <td><strong>GET /movies/genres/:name</strong><br />Returns a specific genre by name.</td>
+            <td>N/A</td>
+          </tr>
 
-    <div class="endpoint">
-      <h4>GET /movies/:title</h4>
-      <p>Returns a specific movie by title.</p>
-      <h5>Example Request:</h5>
-      <pre><code>GET /movies/The%20Godfather</code></pre>
-      <h5>Response Example:</h5>
-      <pre><code>{
-  "title": "The Godfather",
-  "year": 1972,
-  "genre": {
-    "name": "Crime",
-    "description": "Crime description"
-  },
-  "director": {
-    "name": "Francis Ford Coppola",
-    "bio": "American film director"
-  }
-}</code></pre>
-    </div>
-
-    <h3>Users</h3>
-    <div class="endpoint">
-      <h4>POST /users</h4>
-      <p>Register a new user.</p>
-      <h5>Request Payload:</h5>
-      <pre><code>{
-  "username": "newUser",
-  "password": "Password123!",
+          <!-- Users Section Header -->
+          <tr class="section-header">
+            <td colspan="2">User Endpoints</td>
+          </tr>
+          <tr>
+            <td><strong>POST /users</strong><br />Register a new user.</td>
+            <td>
+              <pre><code>{
+  "username": "newUser",  <span class="blue-text">// At least 5 characters.</span>
+  "password": "Password123!",  <span class="blue-text">// At least one number, one lowercase, one uppercase, and a special character.</span>
   "email": "newuser@example.com",
   "birthday": "1990-01-01"
 }</code></pre>
-      <h5>Response Example:</h5>
-      <pre><code>{
-  "username": "newUser",
-  "email": "newuser@example.com",
-  "favMovies": []
-}</code></pre>
-    </div>
-
-    <div class="endpoint">
-      <h4>PUT /users/:username</h4>
-      <p>Update user details.</p>
-      <h5>Request Payload:</h5>
-      <pre><code>{
+            </td>
+          </tr>
+          <tr>
+            <td><strong>PUT /users/:username</strong><br />Update user details.</td>
+            <td>
+              <pre><code>{
   "username": "updatedUser",
   "email": "updateduser@example.com",
   "birthday": "1991-02-01"
 }</code></pre>
-      <h5>Response Example:</h5>
-      <pre><code>{
-  "username": "updatedUser",
-  "email": "updateduser@example.com",
-  "favMovies": []
-}</code></pre>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>DELETE /users/:username</strong><br />Delete a user account.</td>
+            <td>N/A</td>
+          </tr>
+          <tr>
+            <td><strong>PUT /users/:username/:movieId</strong><br />Add a favorite movie to a user.</td>
+            <td>N/A</td>
+          </tr>
+          <tr>
+            <td><strong>DELETE /users/:username/:movieId</strong><br />Remove a favorite movie from a user.</td>
+            <td>N/A</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
-
-    <div class="endpoint">
-      <h4>DELETE /users/:username</h4>
-      <p>Delete a user account.</p>
-      <h5>Response Example:</h5>
-      <pre><code>"updatedUser was deleted."</code></pre>
-    </div>
-
-    <h3>Favorites</h3>
-    <div class="endpoint">
-      <h4>PUT /users/:username/:movieId</h4>
-      <p>Add a favorite movie to a user.</p>
-      <h5>Response Example:</h5>
-      <pre><code>{
-  "username": "updatedUser",
-  "favMovies": [
-    {
-      "title": "The Godfather"
-    }
-  ]
-}</code></pre>
-    </div>
-
-    <div class="endpoint">
-      <h4>DELETE /users/:username/:movieId</h4>
-      <p>Remove a favorite movie from a user.</p>
-      <h5>Response Example:</h5>
-      <pre><code>{
-  "username": "updatedUser",
-  "favMovies": []
-}</code></pre>
-    </div>
-
-    <h2 id="models">Models</h2>
-    <h3>Movie Model</h3>
-    <pre><code>{
-  "title": "String",
-  "year": "Number",
-  "genre": [{ "type": "mongoose.Schema.Types.ObjectId", "ref": "genres" }],
-  "director": [{ "type": "mongoose.Schema.Types.ObjectId", "ref": "directors" }],
-  "imdb_rating": "Number",
-  "duration": "Number",
-  "language": "String",
-  "description": "String",
-  "imagePath": "String",
-  "featured": "Boolean"
-}</code></pre>
-
-    <h3>User Model</h3>
-    <pre><code>{
-  "username": "String",
-  "password": "String",
-  "email": "String",
-  "birthday": "Date",
-  "favMovies": [{ "type": "mongoose.Schema.Types.ObjectId", "ref": "movies" }]
-}</code></pre>
 
     <h2 id="authentication">Authentication</h2>
     <p>
       The app uses JWT authentication. Users must log in to receive a token, which is then included in the
       <code>Authorization</code> header of all requests as a Bearer token.
+    </p>
+    <p>
+      For added security, user passwords are hashed before being stored in the database using a strong hashing algorithm
+      (such as bcrypt). This ensures that even if the database were compromised, plaintext passwords would not be
+      exposed.
     </p>
 
     <h3>JWT Example</h3>

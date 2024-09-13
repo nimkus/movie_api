@@ -177,7 +177,7 @@ listAll('/movies/actors/all', actors, 'movies');
 
 // READ – Get a single entry
 // specific movie, by title
-getSingleEntry('/movies/:title', 'title', movies, 'genre director');
+getSingleEntry('/movies/:title', 'title', movies, 'genre director actors');
 // specific genre, by name
 getSingleEntry('/movies/genres/:genreName', 'name', genres);
 // specific director, by name
