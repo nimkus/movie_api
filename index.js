@@ -21,11 +21,16 @@ const { movies, genres, directors, actors, users } = Models;
 async function connectToDatabase() {
   try {
     // Attempt to connect to MongoDB using the connection URI from environment variables
-    //use "mongoose.connect('mongodb://localhost:27017/myFlixDB')" to connect to local db
-    await mongoose.connect(process.env.CONNECTION_URI, {
+    // local
+    await mongoose.connect('mongodb://localhost:27017/myFlixDB', {
       useNewUrlParser: true, // Recommended to avoid deprecation warnings
       useUnifiedTopology: true, // Recommended for new MongoDB drivers
     });
+    // Heroku
+    /* await mongoose.connect(process.env.CONNECTION_URI, {
+      useNewUrlParser: true, // Recommended to avoid deprecation warnings
+      useUnifiedTopology: true, // Recommended for new MongoDB drivers
+    }); */
     console.log('Successfully connected to MongoDB!');
   } catch (error) {
     // Catch and log any error that occurs during the connection attempt
@@ -77,12 +82,6 @@ function getSingleEntry(routePath, key, model, populateWith) {
       res.status(500).send('Error: ' + err);
     }
   });
-}
-
-// Function to create a variable that contains the hashed user password
-async function hashUserPassword() {
-  let hashedPassword = await users.hashPassword(req.body.password);
-  return hashedPassword;
 }
 
 //////////////
@@ -227,8 +226,8 @@ app.post(
     if (!errors.isEmpty()) {
       return res.status(422).json({ errors: errors.array() });
     }
-    // Hash password input
-    hashUserPassword();
+
+    let hashedPassword = await users.hashPassword(req.body.password);
 
     try {
       // check if a user with the requested username already exists
@@ -282,25 +281,23 @@ app.put('/users/:username', passport.authenticate('jwt', { session: false }), as
     return res.status(400).send('Permission denied');
   }
   try {
-    // check if password was provided by request body
+    // Prepare the update object
+    const updateFields = {
+      username: req.body.username,
+      email: req.body.email,
+      birthday: req.body.birthday,
+    };
+
+    // Hash the password if provided
     if (req.body.password) {
-      hashUserPassword();
+      updateFields.password = await users.hashPassword(req.body.password);
     }
 
+    // Update the user and populate the favorite movies
     const updatedUser = await users
-      .findOneAndUpdate(
-        { username: req.params.username },
-        {
-          $set: {
-            username: req.body.username,
-            password: req.body.password,
-            email: req.body.email,
-            birthday: req.body.birthday,
-          },
-        },
-        { new: true }
-      )
+      .findOneAndUpdate({ username: req.params.username }, { $set: updateFields }, { new: true })
       .populate('favMovies');
+
     res.json(updatedUser);
   } catch (err) {
     console.error(err);
