@@ -33,7 +33,7 @@ let directorSchema = mongoose.Schema({
 });
 
 // Model for data about the actors
-let actorsSchema = mongoose.Schema({
+let actorSchema = mongoose.Schema({
   name: { type: String, required: true },
   bio: { type: String },
   dateOfbirth: Date,
@@ -90,7 +90,7 @@ usersSchema.methods.validatePassword = async function (password) {
 const movies = mongoose.model('movies', moviesSchema),
   genres = mongoose.model('genres', genreSchema),
   directors = mongoose.model('directors', directorSchema),
-  actors = mongoose.model('actors', actorsSchema),
+  actors = mongoose.model('actors', actorSchema),
   users = mongoose.model('users', usersSchema);
 
 module.exports.movies = movies;
