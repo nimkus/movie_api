@@ -45,11 +45,6 @@ const app = express();
 
 // FUNCTION TO MANIPULATE STRINGS
 
-// Function to capitalize the first letter of a string
-function capitalize(string) {
-  return string[0].toUpperCase() + string.slice(1);
-}
-
 // FUNCTIONS FOR ROUTING
 
 // Function to get a list of all items from a db collection, with option to populate entries
