@@ -70,8 +70,12 @@
     <h2>Table of Contents</h2>
     <ul>
       <li><a href="#app-setup">App Setup</a></li>
+      <li><a href="#installation">Installation</a></li>
+
       <li><a href="#endpoints">Endpoints</a></li>
       <li><a href="#authentication">Authentication</a></li>
+      <li><a href="#dependencies">Dependencies</a></li>
+      <!-- Link to dependencies section -->
     </ul>
 
     <h2 id="app-setup">App Setup</h2>
@@ -79,6 +83,20 @@
       The app uses Express, MongoDB, and various middleware for functionality such as body parsing, authentication,
       logging, and CORS.
     </p>
+
+    <h2 id="installation">Installation</h2>
+    <p>To install and run the MyFlix-Movie API, follow these steps:</p>
+    <ol>
+      <li>Clone the repository:</li>
+      <pre><code>git clone https://github.com/yourusername/MyFlix-Movie-API.git</code></pre>
+      <li>Navigate to the project directory:</li>
+      <pre><code>cd MyFlix-Movie-API</code></pre>
+      <li>Install the required dependencies:</li>
+      <pre><code>npm install</code></pre>
+      <li>Start the server:</li>
+      <pre><code>npm start</code></pre>
+      <li>Open your browser and go to <code>http://localhost:YOUR_PORT</code> to access the API.</li>
+    </ol>
 
     <h2 id="endpoints">Endpoints</h2>
 
@@ -204,5 +222,72 @@
       Passport.js is used for handling the authentication logic, leveraging local strategies for username/password
       authentication and JWT strategies for protecting routes.
     </p>
+
+    <h2 id="dependencies">Dependencies</h2>
+    <p>The following dependencies are required for the application to function properly:</p>
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Dependency</th>
+            <th>Version</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>bcrypt</td>
+            <td>^5.1.1</td>
+          </tr>
+          <tr>
+            <td>body-parser</td>
+            <td>^1.20.2</td>
+          </tr>
+          <tr>
+            <td>cors</td>
+            <td>^2.8.5</td>
+          </tr>
+          <tr>
+            <td>express</td>
+            <td>^4.19.2</td>
+          </tr>
+          <tr>
+            <td>express-validator</td>
+            <td>^7.2.0</td>
+          </tr>
+          <tr>
+            <td>jsonwebtoken</td>
+            <td>^9.0.2</td>
+          </tr>
+          <tr>
+            <td>method-override</td>
+            <td>^3.0.0</td>
+          </tr>
+          <tr>
+            <td>mongoose</td>
+            <td>^8.5.1</td>
+          </tr>
+          <tr>
+            <td>morgan</td>
+            <td>^1.10.0</td>
+          </tr>
+          <tr>
+            <td>passport</td>
+            <td>^0.7.0</td>
+          </tr>
+          <tr>
+            <td>passport-jwt</td>
+            <td>^4.0.1</td>
+          </tr>
+          <tr>
+            <td>passport-local</td>
+            <td>^1.0.0</td>
+          </tr>
+          <tr>
+            <td>uuid</td>
+            <td>^10.0.0</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </body>
 </html>
