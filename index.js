@@ -22,15 +22,15 @@ async function connectToDatabase() {
   try {
     // Attempt to connect to MongoDB using the connection URI from environment variables
     // local
-    await mongoose.connect('mongodb://localhost:27017/myFlixDB', {
-      useNewUrlParser: true, // Recommended to avoid deprecation warnings
-      useUnifiedTopology: true, // Recommended for new MongoDB drivers
-    });
-    // Heroku
-    /* await mongoose.connect(process.env.CONNECTION_URI, {
+    /* await mongoose.connect('mongodb://localhost:27017/myFlixDB', {
       useNewUrlParser: true, // Recommended to avoid deprecation warnings
       useUnifiedTopology: true, // Recommended for new MongoDB drivers
     }); */
+    // Heroku
+    await mongoose.connect(process.env.CONNECTION_URI, {
+      useNewUrlParser: true, // Recommended to avoid deprecation warnings
+      useUnifiedTopology: true, // Recommended for new MongoDB drivers
+    });
     console.log('Successfully connected to MongoDB!');
   } catch (error) {
     // Catch and log any error that occurs during the connection attempt
