@@ -79,6 +79,12 @@ function getSingleEntry(routePath, key, model, populateWith) {
   });
 }
 
+// Function to create a variable that contains the hashed user password
+async function hashUserPassword() {
+  let hashedPassword = await users.hashPassword(req.body.password);
+  return hashedPassword;
+}
+
 //////////////
 // LOGGING //
 ////////////
@@ -111,7 +117,7 @@ app.use('/', express.static('public'));
 // Using CORS (Cross-origin resource sharing)
 const cors = require('cors');
 
-// Load allowed origins from environment variables, allowing flexibility across environments.
+// Load allowed origins
 let allowedOrigins = ['http://localhost:8080', 'https://localhost:8080'];
 
 app.use(
@@ -222,7 +228,7 @@ app.post(
       return res.status(422).json({ errors: errors.array() });
     }
     // Hash password input
-    let hashedPassword = await users.hashPassword(req.body.password);
+    hashUserPassword();
 
     try {
       // check if a user with the requested username already exists
@@ -276,6 +282,11 @@ app.put('/users/:username', passport.authenticate('jwt', { session: false }), as
     return res.status(400).send('Permission denied');
   }
   try {
+    // check if password was provided by request body
+    if (req.body.password) {
+      hashUserPassword();
+    }
+
     const updatedUser = await users
       .findOneAndUpdate(
         { username: req.params.username },
