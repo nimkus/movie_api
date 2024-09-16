@@ -104,100 +104,212 @@
       <table>
         <thead>
           <tr>
+            <th>METHOD</th>
             <th>ENDPOINTS</th>
-            <th>(EXAMPLE) REQUEST PAYLOAD</th>
+            <th>REQUEST PAYLOAD (EXAMPLE)</th>
+            <th>RESPONSE SAMPLE</th>
           </tr>
         </thead>
         <tbody>
           <!-- Login Section Header -->
           <tr class="section-header">
-            <td colspan="2">Login Endpoints</td>
+            <td colspan="4">Login Endpoints</td>
           </tr>
           <tr>
+            <td>POST</td>
+            <td>/login<br />Allows users to log in and receive a JWT for further authentication.</td>
             <td>
-              <strong>POST /login</strong><br />Allows users to log in and receive a JWT for further authentication.
+              <pre><code>{
+      "username": "johnDoe",
+      "password": "Password123!"
+    }</code></pre>
             </td>
             <td>
               <pre><code>{
-  "username": "johnDoe",
-  "password": "Password123!"
-}</code></pre>
+      "token": "your_jwt_token"
+    }</code></pre>
             </td>
           </tr>
 
           <!-- Movies Section Header -->
           <tr class="section-header">
-            <td colspan="2">Movie Endpoints</td>
+            <td colspan="4">Movie Endpoints</td>
           </tr>
           <tr>
-            <td><strong>GET /movies</strong><br />Returns a list of all movies.</td>
+            <td>GET</td>
+            <td>/movies<br />Returns a list of all movies.</td>
             <td>N/A</td>
+            <td>
+              <pre><code>[
+      {
+        "title": "Inception",
+        "director": "Christopher Nolan",
+        "genre": "Sci-Fi"
+      },
+      {
+        "title": "Interstellar",
+        "director": "Christopher Nolan",
+        "genre": "Sci-Fi"
+      }
+    ]</code></pre>
+            </td>
           </tr>
           <tr>
-            <td><strong>GET /movies/:title</strong><br />Returns a specific movie by title.<br /></td>
+            <td>GET</td>
+            <td>/movies/:title<br />Returns a specific movie by title.</td>
             <td>N/A</td>
+            <td>
+              <pre><code>{
+      "title": "Inception",
+      "director": "Christopher Nolan",
+      "genre": "Sci-Fi"
+    }</code></pre>
+            </td>
           </tr>
           <tr>
-            <td><strong>GET /movies/directors/all</strong><br />Returns a list of all directors.</td>
+            <td>GET</td>
+            <td>/movies/directors/all<br />Returns a list of all directors.</td>
             <td>N/A</td>
+            <td>
+              <pre><code>[
+      "Christopher Nolan",
+      "Quentin Tarantino",
+      "Steven Spielberg"
+    ]</code></pre>
+            </td>
           </tr>
           <tr>
-            <td><strong>GET /movies/directors/:name</strong><br />Returns a specific director by name.</td>
+            <td>GET</td>
+            <td>/movies/directors/:name<br />Returns a specific director by name.</td>
             <td>N/A</td>
+            <td>
+              <pre><code>{
+      "name": "Christopher Nolan",
+      "movies": ["Inception", "Interstellar", "The Dark Knight"]
+    }</code></pre>
+            </td>
           </tr>
           <tr>
-            <td><strong>GET /movies/genres/all</strong><br />Returns a list of all genres.</td>
+            <td>GET</td>
+            <td>/movies/genres/all<br />Returns a list of all genres.</td>
             <td>N/A</td>
+            <td>
+              <pre><code>[
+      "Sci-Fi",
+      "Action",
+      "Drama"
+    ]</code></pre>
+            </td>
           </tr>
           <tr>
-            <td><strong>GET /movies/genres/:name</strong><br />Returns a specific genre by name.</td>
+            <td>GET</td>
+            <td>/movies/genres/:name<br />Returns a specific genre by name.</td>
             <td>N/A</td>
+            <td>
+              <pre><code>{
+      "name": "Sci-Fi",
+      "movies": ["Inception", "Interstellar"]
+    }</code></pre>
+            </td>
           </tr>
           <tr>
-            <td><strong>GET /movies/actors/all</strong><br />Returns a list of all actors.</td>
+            <td>GET</td>
+            <td>/movies/actors/all<br />Returns a list of all actors.</td>
             <td>N/A</td>
+            <td>
+              <pre><code>[
+      "Leonardo DiCaprio",
+      "Brad Pitt",
+      "Matt Damon"
+    ]</code></pre>
+            </td>
           </tr>
           <tr>
-            <td><strong>GET /movies/actors/:name</strong><br />Returns a specific actor by name.</td>
+            <td>GET</td>
+            <td>/movies/actors/:name<br />Returns a specific actor by name.</td>
             <td>N/A</td>
+            <td>
+              <pre><code>{
+      "name": "Leonardo DiCaprio",
+      "movies": ["Inception", "The Revenant"]
+    }</code></pre>
+            </td>
           </tr>
 
           <!-- Users Section Header -->
           <tr class="section-header">
-            <td colspan="2">User Endpoints</td>
+            <td colspan="4">User Endpoints</td>
           </tr>
           <tr>
-            <td><strong>POST /users</strong><br />Register a new user.</td>
+            <td>POST</td>
+            <td>/users<br />Register a new user.</td>
             <td>
               <pre><code>{
-  "username": "newUser",  <span class="blue-text">// At least 5 characters.</span>
-  "password": "Password123!",  <span class="blue-text">// At least one number, one lowercase, one uppercase, and a special character.</span>
-  "email": "newuser@example.com",
-  "birthday": "1990-01-01"
-}</code></pre>
+      "username": "newUser",
+      "password": "Password123!",
+      "email": "newuser@example.com",
+      "birthday": "1990-01-01"
+    }</code></pre>
+            </td>
+            <td>
+              <pre><code>{
+      "message": "User successfully registered",
+      "user": {
+        "username": "newUser",
+        "email": "newuser@example.com"
+      }
+    }</code></pre>
             </td>
           </tr>
           <tr>
-            <td><strong>PUT /users/:username</strong><br />Update user details.</td>
+            <td>PUT</td>
+            <td>/users/:username<br />Update user details.</td>
             <td>
               <pre><code>{
-  "username": "updatedUser",
-  "email": "updateduser@example.com",
-  "birthday": "1991-02-01"
-}</code></pre>
+      "username": "updatedUser",
+      "email": "updateduser@example.com",
+      "birthday": "1991-02-01"
+    }</code></pre>
+            </td>
+            <td>
+              <pre><code>{
+      "message": "User details updated",
+      "user": {
+        "username": "updatedUser",
+        "email": "updateduser@example.com"
+      }
+    }</code></pre>
             </td>
           </tr>
           <tr>
-            <td><strong>DELETE /users/:username</strong><br />Delete a user account.</td>
+            <td>DELETE</td>
+            <td>/users/:username<br />Delete a user account.</td>
             <td>N/A</td>
+            <td>
+              <pre><code>{
+      "message": "User successfully deleted"
+    }</code></pre>
+            </td>
           </tr>
           <tr>
-            <td><strong>PUT /users/:username/:movieId</strong><br />Add a favorite movie to a user.</td>
+            <td>PUT</td>
+            <td>/users/:username/:movieId<br />Add a favorite movie to a user.</td>
             <td>N/A</td>
+            <td>
+              <pre><code>{
+      "message": "Movie added to favorites"
+    }</code></pre>
+            </td>
           </tr>
           <tr>
-            <td><strong>DELETE /users/:username/:movieId</strong><br />Remove a favorite movie from a user.</td>
+            <td>DELETE</td>
+            <td>/users/:username/:movieId<br />Remove a favorite movie from a user.</td>
             <td>N/A</td>
+            <td>
+              <pre><code>{
+      "message": "Movie removed from favorites"
+    }</code></pre>
+            </td>
           </tr>
         </tbody>
       </table>
