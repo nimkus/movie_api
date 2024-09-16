@@ -1,6 +1,6 @@
-////////////////
-// APP SETUP //
-//////////////
+/**
+ * App Setup
+ */
 
 const express = require('express'),
   morgan = require('morgan'),
@@ -20,20 +20,18 @@ const { movies, genres, directors, actors, users } = Models;
 // Function to connect to MongoDB
 async function connectToDatabase() {
   try {
-    // Attempt to connect to MongoDB using the connection URI from environment variables
-    // local
+    // connect to MongoDB – locally for development
     /* await mongoose.connect('mongodb://localhost:27017/myFlixDB', {
       useNewUrlParser: true, // Recommended to avoid deprecation warnings
       useUnifiedTopology: true, // Recommended for new MongoDB drivers
     }); */
-    // Heroku
+    // connect to MongoDB – Heroku
     await mongoose.connect(process.env.CONNECTION_URI, {
       useNewUrlParser: true, // Recommended to avoid deprecation warnings
       useUnifiedTopology: true, // Recommended for new MongoDB drivers
     });
     console.log('Successfully connected to MongoDB!');
   } catch (error) {
-    // Catch and log any error that occurs during the connection attempt
     console.error('Error connecting to MongoDB:', error.message);
   }
 }
@@ -44,15 +42,11 @@ connectToDatabase();
 // Calling Express
 const app = express();
 
-////////////////
-// FUNCTIONS //
-//////////////
+/**
+ * Functions for routing
+ */
 
-// FUNCTION TO MANIPULATE STRINGS
-
-// FUNCTIONS FOR ROUTING
-
-// Function to get a list of all items from a db collection, with option to populate entries
+// List all items of a db collection
 function listAll(routePath, model, populateWith) {
   app.get(routePath, passport.authenticate('jwt', { session: false }), async (req, res) => {
     try {
@@ -65,7 +59,7 @@ function listAll(routePath, model, populateWith) {
   });
 }
 
-// Function to get single of a db collection, with option to populate entries
+// List a single item of a db collection
 function getSingleEntry(routePath, key, model, populateWith) {
   app.get(routePath, passport.authenticate('jwt', { session: false }), async (req, res) => {
     const name = Object.values(req.params)[0];
@@ -84,34 +78,36 @@ function getSingleEntry(routePath, key, model, populateWith) {
   });
 }
 
-//////////////
-// LOGGING //
-////////////
+/**
+ * Logging
+ */
 
-// create a write stream (in append mode) + a ‘log.txt’ file is created in root directory
+// create a write stream (in append mode)
 const accessLogStream = fs.createWriteStream(path.join(__dirname, 'log.txt'), { flags: 'a' });
 
-// setup the logger
+// set up the logger
 app.use(morgan('combined', { stream: accessLogStream }));
 
-///////////////////
-// JSON PARSING //
-/////////////////
+/**
+ * JSON Parsing
+ */
 
-// Body parser and method override middleware
+// Body parser
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+
+// method override middleware
 app.use(methodOverride());
 
-///////////////////
-// STATIC FILES //
-/////////////////
+/**
+ * Stactic Files
+ */
 
 app.use('/', express.static('public'));
 
-//////////////////
-// APP ROUTING //
-////////////////
+/**
+ * App Routing
+ */
 
 // Using CORS (Cross-origin resource sharing)
 const cors = require('cors');
@@ -130,11 +126,11 @@ app.use(
 
       // Check if the origin is in the allowed list
       if (allowedOrigins.includes(origin)) {
-        return callback(null, true); // Allow request if origin is allowed
+        return callback(null, true);
       } else {
         // Logging for better debugging and tracking
         console.log(`CORS policy blocked request from origin: ${origin}`);
-        // Custom error message but avoid exposing the exact origin in production for security
+        // Avoid exposing the exact origin in production for security reseons
         const message =
           process.env.NODE_ENV === 'production'
             ? 'CORS policy blocked this request'
@@ -143,27 +139,33 @@ app.use(
         return callback(new Error(message), false);
       }
     },
-    optionsSuccessStatus: 200, // Some browsers (IE11, older versions of Chrome) may return status 204 by default
+    optionsSuccessStatus: 200, // Some browsers may return status 204 by default
   })
 );
 
-//  ------ ENDPOINT LOGIN ------
+/**
+ * Endpoint LOGIN
+ */
 
-// Login for users, generating a JWT as users log in
+// Login for users, generating a JWT
 let auth = require('./auth')(app);
 
 // Logic for authenticating users
 const passport = require('passport');
 require('./passport');
 
-//  ------ ENDPOINT HOME ------
+/**
+ * Endpoint HOME
+ */
 
-// READ – Get a welcome message, homepage
+// READ – Homepage
 app.get('/', (req, res) => {
   res.send('Welcome to our movie API!');
 });
 
-// ------ ENDPOINTS MOVIES ------
+/**
+ * Endpoints MOVIES
+ */
 
 // READ – Get a list
 // of all movies
@@ -185,16 +187,19 @@ getSingleEntry('/movies/directors/:directorName', 'name', directors);
 // specific actor, by name
 getSingleEntry('/movies/actors/:actorName', 'name', actors, 'movies');
 
-// ------ ENDPOINTS USER ------
+/**
+ * Endpoints USERS
+ */
 
 // CREATE – Add a new user
-/* expected format:
-  username: { type: String, required: true },
-  password: { type: String, required: true },
-  email: { type: String, required: true },
-  birthday: Date,
-  favMovies: [{ type: mongoose.Schema.Types.ObjectId, ref: 'movies' }], */
-
+/**
+ * expected format:
+ * username: { type: String, required: true },
+ * password: { type: String, required: true },
+ * email: { type: String, required: true },
+ * birthday: Date,
+ * favMovies: [{ type: mongoose.Schema.Types.ObjectId, ref: 'movies' }],
+ */
 app.post(
   '/users',
   [
@@ -230,7 +235,7 @@ app.post(
     let hashedPassword = await users.hashPassword(req.body.password);
 
     try {
-      // check if a user with the requested username already exists
+      // check if username already exists
       const existingUser = await users.findOne({ username: req.body.username });
       if (existingUser) {
         return res.status(400).send(`${req.body.username} already exists`);
