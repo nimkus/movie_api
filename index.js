@@ -173,7 +173,7 @@ app.get('/', (req, res) => {
 // List all items of a db collection
 app.get('/movies', async (req, res) => {
   try {
-    const list = await movies.find().populate('genre director actors');
+    const list = await movies.find().populate('genre director');
     res.status(201).json(list);
   } catch (err) {
     console.error(err);
@@ -189,7 +189,7 @@ listAll('/movies/actors/all', actors, 'movies');
 
 // READ – Get a single entry
 // specific movie, by title
-getSingleEntry('/movies/:title', 'title', movies, 'genre director actors');
+getSingleEntry('/movies/:title', 'title', movies, 'genre director');
 // specific genre, by name
 getSingleEntry('/movies/genres/:genreName', 'name', genres);
 // specific director, by name
