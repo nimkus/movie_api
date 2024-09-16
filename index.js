@@ -171,7 +171,7 @@ app.get('/', (req, res) => {
 // of all movies
 //listAll('/movies', movies, 'genre director actors');
 // List all items of a db collection
-app.get(routePath, async (req, res) => {
+app.get('/movies', async (req, res) => {
   try {
     const list = await movies.find().populate('genre director actors');
     res.status(201).json(list);
