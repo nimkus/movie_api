@@ -243,7 +243,7 @@ app.post(
         birthday: req.body.birthday,
         favMovies: req.body.favMovies,
       });
-      res.status(201).send(`The user ${newUser.username} has been created`);
+      res.status(201).send(`The user "${newUser.username}" has been created`);
     } catch (err) {
       console.error(err);
       res.status(500).send('Error: ' + err);
