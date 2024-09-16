@@ -243,7 +243,7 @@ app.post(
         birthday: req.body.birthday,
         favMovies: req.body.favMovies,
       });
-      res.status(201).send(`The user "${newUser.username}" has been created`);
+      res.status(201).send(`User "${newUser.username}" has been created.`);
     } catch (err) {
       console.error(err);
       res.status(500).send('Error: ' + err);
@@ -261,7 +261,7 @@ app.put('/users/:username/:movieId', passport.authenticate('jwt', { session: fal
         { new: true }
       )
       .populate('favMovies');
-    res.json(updatedUser);
+    res.status(201).send(`User has been updated.`);
   } catch (err) {
     console.error(err);
     res.status(500).send('Error: ' + err);
