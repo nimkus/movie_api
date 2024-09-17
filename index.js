@@ -113,7 +113,7 @@ app.use('/', express.static('public'));
 const cors = require('cors');
 
 // Load allowed origins
-let allowedOrigins = ['http://localhost:8080', 'https://localhost:8080'];
+let allowedOrigins = ['*'];
 
 app.use(
   cors({
