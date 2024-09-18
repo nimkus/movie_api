@@ -118,26 +118,27 @@ const allowedOrigins = ['http://localhost:8080', 'http://localhost:1234'];
 app.use(
   cors({
     origin: (origin, callback) => {
+      const isProduction = process.env.NODE_ENV === 'production';
+
       if (!origin) {
-        return callback(null, true);
-        //If no origin is provided (e.g., server-to-server communication), deny by default
-        //return callback(new Error('CORS policy doesn’t allow access from unspecified origins'), false);
+        // Allow all requests without origin in development, block in production
+        return callback(
+          isProduction ? new Error('CORS policy doesn’t allow access from unspecified origins') : null,
+          !isProduction
+        );
       }
 
-      // Check if the origin is in the allowed list
       if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      } else {
-        // Logging for better debugging and tracking
-        console.log(`CORS policy blocked request from origin: ${origin}`);
-        // Avoid exposing the exact origin in production for security reseons
-        const message =
-          process.env.NODE_ENV === 'production'
-            ? 'CORS policy blocked this request'
-            : `The CORS policy for this application doesn’t allow access from origin ${origin}`;
-
-        return callback(new Error(message), false);
+        return callback(null, true); // Allow listed origins
       }
+
+      // Log and block non-allowed origins
+      console.log(`CORS policy blocked request from origin: ${origin}`);
+      const message = isProduction
+        ? 'CORS policy blocked this request'
+        : `The CORS policy doesn’t allow access from origin ${origin}`;
+
+      return callback(new Error(message), false);
     },
     optionsSuccessStatus: 200, // Some browsers may return status 204 by default
   })
