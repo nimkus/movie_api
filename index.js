@@ -165,17 +165,7 @@ app.get('/', (req, res) => {
 
 // READ – Get a list
 // of all movies
-//listAll('/movies', movies, 'genre director actors');
-// List all items of a db collection
-app.get('/movies', async (req, res) => {
-  try {
-    const list = await movies.find().populate('genre director');
-    res.status(201).json(list);
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Error: ' + err);
-  }
-});
+listAll('/movies', movies, 'genre director');
 // of all genres
 listAll('/movies/genres/all', genres);
 // of all directors
