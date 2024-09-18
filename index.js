@@ -17,20 +17,15 @@ const express = require('express'),
 // Integrating Mongoose models
 const { movies, genres, directors, actors, users } = Models;
 
-// Function to connect to MongoDB
+// Connect to MongoDB
 async function connectToDatabase() {
+  // Connect locally in development, to MongoDBAtlas in production
+  const dbURI =
+    process.env.NODE_ENV === 'production' ? process.env.CONNECTION_URI : 'mongodb://localhost:27017/myFlixDB';
+
   try {
-    // connect to MongoDB – locally for development
-    /* await mongoose.connect('mongodb://localhost:27017/myFlixDB', {
-      useNewUrlParser: true, // Recommended to avoid deprecation warnings
-      useUnifiedTopology: true, // Recommended for new MongoDB drivers
-    }); */
-    // connect to MongoDB – Heroku
-    await mongoose.connect(process.env.CONNECTION_URI, {
-      useNewUrlParser: true, // Recommended to avoid deprecation warnings
-      useUnifiedTopology: true, // Recommended for new MongoDB drivers
-    });
-    console.log('Successfully connected to MongoDB!');
+    await mongoose.connect(dbURI); // No need for deprecated options
+    console.log('Successfully connected to the database!');
   } catch (error) {
     console.error('Error connecting to MongoDB:', error.message);
   }
@@ -118,8 +113,8 @@ const allowedOrigins = ['http://localhost:8080', 'http://localhost:1234'];
 app.use(
   cors({
     origin: (origin, callback) => {
+      // Check if app is in production mode
       const isProduction = process.env.NODE_ENV === 'production';
-
       if (!origin) {
         // Allow all requests without origin in development, block in production
         return callback(
