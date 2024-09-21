@@ -31,7 +31,7 @@ module.exports = (router) => {
         }
         const token = generateJWTToken(user.toJSON());
         const isProduction = process.env.NODE_ENV === 'production';
-        isProduction ? 'Login successful' : res.json({ user, token });
+        isProduction ? res.send('Login successful') : res.json({ user, token });
       });
     })(req, res);
   });
