@@ -19,7 +19,6 @@ const generateJWTToken = (user) => {
 module.exports = (router) => {
   router.post('/login', (req, res) => {
     passport.authenticate('local', { session: false }, (error, user, info) => {
-      const isProduction = process.env.NODE_ENV === 'production';
       if (error || !user) {
         return res.status(400).json({
           message: 'Something is not right',
@@ -31,6 +30,7 @@ module.exports = (router) => {
           res.status(500).send(error);
         }
         const token = generateJWTToken(user.toJSON());
+        const isProduction = process.env.NODE_ENV === 'production';
         isProduction ? 'Login successful' : res.json({ user, token });
       });
     })(req, res);
