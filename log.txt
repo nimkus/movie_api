@@ -704,3 +704,5 @@
 127.0.0.1 - - [13/Sep/2024:13:34:16 +0000] "PUT /users/DianaPrincess HTTP/1.1" 200 234 "-" "PostmanRuntime/7.42.0"
 127.0.0.1 - - [18/Sep/2024:11:20:58 +0000] "GET /users HTTP/1.1" 201 12955 "-" "PostmanRuntime/7.42.0"
 127.0.0.1 - - [18/Sep/2024:11:22:09 +0000] "POST /users HTTP/1.1" 201 40 "-" "PostmanRuntime/7.42.0"
+127.0.0.1 - - [21/Sep/2024:11:17:26 +0000] "POST /login?username=DianaPrinced&password=AmazonWarrior1! HTTP/1.1" 400 49 "-" "PostmanRuntime/7.42.0"
+127.0.0.1 - - [21/Sep/2024:11:17:45 +0000] "POST /login?username=testor123456&password=test@Test12 HTTP/1.1" 400 49 "-" "PostmanRuntime/7.42.0"

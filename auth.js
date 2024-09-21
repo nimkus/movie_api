@@ -30,7 +30,7 @@ module.exports = (router) => {
           res.status(500).send(error);
         }
         const token = generateJWTToken(user.toJSON());
-        res.json({ user, token });
+        res.json({ user: { username: user.username }, token });
       });
     })(req, res);
   });
