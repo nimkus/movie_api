@@ -30,8 +30,7 @@ module.exports = (router) => {
           res.status(500).send(error);
         }
         const token = generateJWTToken(user.toJSON());
-        const isProduction = process.env.NODE_ENV === 'production';
-        isProduction ? res.send('Login successful') : res.json({ user, token });
+        res.json({ user, token });
       });
     })(req, res);
   });
