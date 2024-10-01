@@ -44,8 +44,15 @@ const app = express();
 // List all items of a db collection
 function listAll(routePath, model, populateWith) {
   app.get(routePath, passport.authenticate('jwt', { session: false }), async (req, res) => {
+    // set up pagination
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 6;
+
+    const startIndex = (page - 1) * limit;
+    const total = await model.countDocuments();
+
     try {
-      const list = await model.find().populate(populateWith);
+      const list = await model.find().skip(startIndex).limit(limit).populate(populateWith);
       res.status(201).json(list);
     } catch (err) {
       console.error(err);
