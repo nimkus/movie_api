@@ -24,7 +24,7 @@ async function connectToDatabase() {
     process.env.NODE_ENV === 'production' ? process.env.CONNECTION_URI : 'mongodb://localhost:27017/myFlixDB';
 
   try {
-    await mongoose.connect(dbURI); // No need for deprecated options
+    await mongoose.connect(dbURI);
     console.log('Successfully connected to the database!');
   } catch (error) {
     console.error('Error connecting to MongoDB:', error.message);
@@ -338,7 +338,7 @@ app.use((err, req, res, next) => {
 });
 
 // Port
-const port = process.env.PORT || 8080;
+const port = process.env.NODE_ENV === 'production' ? process.env.PORT || 8080 : 8080;
 app.listen(port, '0.0.0.0', () => {
   console.log('Listening on Port ' + port);
 });
