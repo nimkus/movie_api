@@ -238,7 +238,7 @@ app.post(
       // check if username already exists
       const existingUser = await users.findOne({ username: req.body.username });
       if (existingUser) {
-        return res.status(400).send(`${req.body.username} already exists`);
+        return res.status(400).send(`username already exists`);
       }
 
       const newUser = await users.create({
