@@ -80,6 +80,11 @@ function getSingleEntry(routePath, key, model, populateWith) {
   });
 }
 
+// Function to compare passwords
+users.comparePassword = async function (plainPassword, hashedPassword) {
+  return await bcrypt.compare(plainPassword, hashedPassword);
+};
+
 /**
  * Logging
  */
