@@ -308,7 +308,7 @@ app.put('/users/:username', passport.authenticate('jwt', { session: false }), as
       const isMatch = await users.comparePassword(req.body.currentPassword, user.password);
 
       if (!isMatch) {
-        return res.status(400).send('Current password is incorrect');
+        return res.status(400).send('Unable to complete the request. Please verify your input.');
       }
 
       // Hash the new password and set it in the update fields
