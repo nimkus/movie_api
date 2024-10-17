@@ -285,6 +285,7 @@ app.put('/users/:username', passport.authenticate('jwt', { session: false }), as
   if (req.user.username !== req.params.username) {
     return res.status(400).send('Permission denied');
   }
+
   try {
     // Prepare the update object
     const updateFields = {
@@ -293,9 +294,22 @@ app.put('/users/:username', passport.authenticate('jwt', { session: false }), as
       birthday: req.body.birthday,
     };
 
-    // Hash the password if provided
-    if (req.body.password) {
-      updateFields.password = await users.hashPassword(req.body.password);
+    // Check if a password change is requested
+    if (req.body.currentPassword && req.body.newPassword) {
+      // Fetch the user to get the current password hash
+      const user = await users.findOne({ username: req.params.username });
+
+      // Compare the hashed current password with the stored password hash
+      const isMatch = await users.comparePassword(req.body.currentPassword, user.password);
+
+      if (!isMatch) {
+        return res.status(400).send('Current password is incorrect');
+      }
+
+      // Hash the new password and set it in the update fields
+      updateFields.password = await users.hashPassword(req.body.newPassword);
+    } else if (req.body.currentPassword || req.body.newPassword) {
+      return res.status(400).send('Both current and new passwords must be provided');
     }
 
     // Update the user and populate the favorite movies
@@ -303,7 +317,7 @@ app.put('/users/:username', passport.authenticate('jwt', { session: false }), as
       .findOneAndUpdate({ username: req.params.username }, { $set: updateFields }, { new: true })
       .populate('favMovies');
 
-    res.json(updatedUser);
+    res.json({ success: true, user: updatedUser });
   } catch (err) {
     console.error(err);
     res.status(500).send('Error: ' + err);
