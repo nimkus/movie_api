@@ -264,13 +264,11 @@ app.post(
 // CREATE – Add a favorite movie to a user, by ID
 app.put('/users/:username/:movieId', passport.authenticate('jwt', { session: false }), async (req, res) => {
   try {
-    const updatedUser = await users
-      .findOneAndUpdate(
-        { username: req.params.username },
-        { $addToSet: { favMovies: req.params.movieId } },
-        { new: true }
-      )
-      .populate('favMovies');
+    const updatedUser = await users.findOneAndUpdate(
+      { username: req.params.username },
+      { $addToSet: { favMovies: req.params.movieId } },
+      { new: true }
+    );
     res.status(201).send(`User has been updated.`);
   } catch (err) {
     console.error(err);
@@ -318,9 +316,11 @@ app.put('/users/:username', passport.authenticate('jwt', { session: false }), as
     }
 
     // Update the user and populate the favorite movies
-    const updatedUser = await users
-      .findOneAndUpdate({ username: req.params.username }, { $set: updateFields }, { new: true })
-      .populate('favMovies');
+    const updatedUser = await users.findOneAndUpdate(
+      { username: req.params.username },
+      { $set: updateFields },
+      { new: true }
+    );
 
     res.json({ success: true, user: updatedUser });
   } catch (err) {
@@ -347,9 +347,11 @@ app.delete('/users/:username', passport.authenticate('jwt', { session: false }),
 // DELETE – Remove a favorite movie from a user, by ID
 app.delete('/users/:username/:movieId', passport.authenticate('jwt', { session: false }), async (req, res) => {
   try {
-    const updatedUser = await users
-      .findOneAndUpdate({ username: req.params.username }, { $pull: { favMovies: req.params.movieId } }, { new: true })
-      .populate('favMovies');
+    const updatedUser = await users.findOneAndUpdate(
+      { username: req.params.username },
+      { $pull: { favMovies: req.params.movieId } },
+      { new: true }
+    );
     res.json(updatedUser);
   } catch (err) {
     console.error(err);
