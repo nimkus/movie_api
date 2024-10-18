@@ -24,11 +24,7 @@ async function connectToDatabase() {
     process.env.NODE_ENV === 'production' ? process.env.CONNECTION_URI : 'mongodb://localhost:27017/myFlixDB';
 
   try {
-    await mongoose.connect(dbURI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      poolSize: 10, // Connection Pooling
-    });
+    await mongoose.connect(dbURI);
     console.log('Successfully connected to the database!');
   } catch (error) {
     console.error('Error connecting to MongoDB:', error.message);
