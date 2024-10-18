@@ -5,7 +5,7 @@ const bcrypt = require('bcrypt');
 
 // Model for data about movies
 let moviesSchema = mongoose.Schema({
-  title: { type: String, required: true, index: true },
+  title: { type: String, required: true },
   year: { type: Number },
   genre: [{ type: mongoose.Schema.Types.ObjectId, ref: 'genres' }],
   director: [{ type: mongoose.Schema.Types.ObjectId, ref: 'directors' }],
@@ -20,13 +20,13 @@ let moviesSchema = mongoose.Schema({
 
 // Model for Data about genres
 let genreSchema = mongoose.Schema({
-  name: { type: String, required: true, index: true },
+  name: { type: String, required: true },
   description: { type: String },
 });
 
 // Model for data about directors
 let directorSchema = mongoose.Schema({
-  name: { type: String, required: true, index: true },
+  name: { type: String, required: true },
   bio: { type: String },
   date_of_birth: Date,
   date_of_death: Date,
@@ -34,7 +34,7 @@ let directorSchema = mongoose.Schema({
 
 // Model for data about the actors
 let actorSchema = mongoose.Schema({
-  name: { type: String, required: true, index: true },
+  name: { type: String, required: true },
   bio: { type: String },
   dateOfbirth: Date,
   movies: [{ type: mongoose.Schema.Types.ObjectId, ref: 'movies' }],
@@ -42,7 +42,7 @@ let actorSchema = mongoose.Schema({
 
 // Model for data about Users
 let usersSchema = mongoose.Schema({
-  username: { type: String, required: true, index: true },
+  username: { type: String, required: true },
   password: { type: String, required: true },
   email: { type: String, required: true },
   birthday: Date,
