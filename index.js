@@ -53,11 +53,24 @@ function listAll(routePath, model, populateWith) {
     const limit = parseInt(req.query.limit) || 6;
 
     const startIndex = (page - 1) * limit;
-    const total = await model.countDocuments();
 
     try {
+      // Get total count of documents
+      const total = await model.countDocuments();
+
+      // Get the data with pagination
       const list = await model.find().skip(startIndex).limit(limit).populate(populateWith);
-      res.status(201).json(list);
+
+      // Calculate total pages
+      const totalPages = Math.ceil(total / limit);
+
+      // Return pagination metadata and list to the client
+      res.status(201).json({
+        total, // Total number of documents
+        totalPages, // Total number of pages
+        currentPage: page, // Current page
+        data: list, // The actual data
+      });
     } catch (err) {
       console.error(err);
       res.status(500).send('Error: ' + err);
