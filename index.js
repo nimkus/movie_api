@@ -45,12 +45,12 @@ const app = express();
  * Functions for routing
  */
 
-// List all items of a db collection
+// List all items of a db collection with pagination
 function listAll(routePath, model, populateWith) {
   app.get(routePath, passport.authenticate('jwt', { session: false }), async (req, res) => {
     // set up pagination
     const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 6;
+    const limit = parseInt(req.query.limit) || 6; // Allow the client to pass limit, fallback to 6
 
     const startIndex = (page - 1) * limit;
 
@@ -65,7 +65,8 @@ function listAll(routePath, model, populateWith) {
       const totalPages = Math.ceil(total / limit);
 
       // Return pagination metadata and list to the client
-      res.status(201).json({
+      res.status(200).json({
+        limit, // Number of documents per page (from client or default)
         total, // Total number of documents
         totalPages, // Total number of pages
         currentPage: page, // Current page
