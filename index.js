@@ -27,7 +27,7 @@ async function connectToDatabase() {
     await mongoose.connect(dbURI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
-      poolSize: 10, // Connection Pooling
+      maxPoolSize: 10, // Connection Pooling
     });
     console.log('Successfully connected to the database!');
   } catch (error) {
