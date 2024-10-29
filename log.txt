@@ -714,3 +714,6 @@
 127.0.0.1 - - [01/Oct/2024:10:21:04 +0000] "POST /login?username=testor123456&password=test@Test12 HTTP/1.1" 200 494 "-" "PostmanRuntime/7.42.0"
 127.0.0.1 - - [01/Oct/2024:10:21:38 +0000] "GET /movies HTTP/1.1" 201 3115 "-" "PostmanRuntime/7.42.0"
 127.0.0.1 - - [01/Oct/2024:10:22:28 +0000] "GET /movies HTTP/1.1" 201 4075 "-" "PostmanRuntime/7.42.0"
+127.0.0.1 - - [29/Oct/2024:10:56:32 +0000] "POST /users HTTP/1.1" 201 38 "-" "PostmanRuntime/7.42.0"
+127.0.0.1 - - [29/Oct/2024:11:01:04 +0000] "POST /login?username=testor1234567&password=test@Test12 HTTP/1.1" 200 497 "-" "PostmanRuntime/7.42.0"
+127.0.0.1 - - [29/Oct/2024:11:01:42 +0000] "GET /users/testor1234567 HTTP/1.1" 500 145 "-" "PostmanRuntime/7.42.0"
