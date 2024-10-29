@@ -297,6 +297,9 @@ app.put('/users/:username/:movieId', passport.authenticate('jwt', { session: fal
 // READ – Get a list of all users
 listAll('/users', users);
 
+// READ – Get a list of all users favorite movies
+listAll('/users/:username/favMoviesAll', users, 'favMovies');
+
 // READ – Get a single entry, specific user by name
 getSingleEntry('/users/:username', 'username', users);
 
@@ -333,7 +336,6 @@ app.put('/users/:username', passport.authenticate('jwt', { session: false }), as
       return res.status(400).send('Both current and new passwords must be provided');
     }
 
-    // Update the user and populate the favorite movies
     const updatedUser = await users.findOneAndUpdate(
       { username: req.params.username },
       { $set: updateFields },
