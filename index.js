@@ -297,11 +297,9 @@ app.put('/users/:username/:movieId', passport.authenticate('jwt', { session: fal
 // READ – Get a list of all users
 listAll('/users', users);
 
-// READ – Get a list of all users favorite movies
-listAll('/users/:username/favMoviesAll', users, 'favMovies');
-
 // READ – Get a single entry, specific user by name
 getSingleEntry('/users/:username', 'username', users);
+getSingleEntry('/users/:username/favMoviesAll', 'username', users, 'favMovies');
 
 // UPDATE Change user info, by user name
 app.put('/users/:username', passport.authenticate('jwt', { session: false }), async (req, res) => {
