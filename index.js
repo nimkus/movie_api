@@ -50,16 +50,45 @@ function listAll(routePath, model, populateWith) {
   app.get(routePath, passport.authenticate('jwt', { session: false }), async (req, res) => {
     // set up pagination
     const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 6; // Allow the client to pass limit, fallback to 6
-
+    const limit = parseInt(req.query.limit) || 6;
     const startIndex = (page - 1) * limit;
 
+    // set up search filters
+    const title = req.query.title || null;
+    const genre = req.query.genre || null;
+    const director = req.query.director || null;
+
     try {
+      const query = {};
+
+      if (title) {
+        query.title = { $regex: title, $options: 'i' };
+      }
+
+      if (genre) {
+        query.$or = [{ genre: { $regex: genre, $options: 'i' } }, { 'genre.name': { $regex: genre, $options: 'i' } }];
+      }
+
+      if (director) {
+        query.$or = [
+          { director: { $regex: director, $options: 'i' } },
+          { 'director.name': { $regex: director, $options: 'i' } },
+        ];
+      }
+
       // Get total count of documents
       const total = await model.countDocuments();
 
-      // Get the data with pagination
-      const list = await model.find().skip(startIndex).limit(limit).populate(populateWith);
+      // Handle no results gracefully
+      if (total === 0) {
+        return res.status(200).json({
+          message: 'No results found for the specified filters.',
+          data: [],
+        });
+      }
+
+      // Fetch data with filters, pagination, and population
+      const list = await model.find(query).skip(startIndex).limit(limit).populate(populateWith);
 
       // Calculate total pages
       const totalPages = Math.ceil(total / limit);
