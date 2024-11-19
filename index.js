@@ -77,7 +77,7 @@ function listAll(routePath, model, populateWith) {
       }
 
       // Get total count of documents
-      const total = await model.countDocuments();
+      const total = await model.countDocuments(query);
 
       // Handle no results gracefully
       if (total === 0) {
@@ -88,7 +88,11 @@ function listAll(routePath, model, populateWith) {
       }
 
       // Fetch data with filters, pagination, and population
-      const list = await model.find(query).skip(startIndex).limit(limit).populate(populateWith);
+      const list = await model
+        .find(query)
+        .skip(limit > 0 ? startIndex : 0)
+        .limit(limit > 0 ? limit : 0)
+        .populate(populateWith);
 
       // Calculate total pages
       const totalPages = Math.ceil(total / limit);
