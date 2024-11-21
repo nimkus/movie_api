@@ -66,11 +66,11 @@ function listAll(routePath, model, populateWith) {
       }
 
       if (genre) {
-        query['genre._id'] = genre;
+        query.genre = genre;
       }
 
       if (director) {
-        query['director._id'] = director;
+        query.director = director;
       }
 
       // Get total count of documents
