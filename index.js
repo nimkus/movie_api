@@ -66,11 +66,11 @@ function listAll(routePath, model, populateWith) {
       }
 
       if (genre) {
-        query.genre = { $elemMatch: { name: { $regex: genre, $options: 'i' } } };
+        query['genre._id'] = genre;
       }
 
       if (director) {
-        query.director = { $elemMatch: { name: { $regex: director, $options: 'i' } } };
+        query['director._id'] = director;
       }
 
       // Get total count of documents
