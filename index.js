@@ -172,7 +172,7 @@ const allowedOrigins = [
   'http://localhost:8080',
   'http://localhost:1234',
   'https://bunbuster.netlify.app/',
-  'https://6740909f766062af1bd734fe--bunbuster.netlify.app/login',
+  'https://6740909f766062af1bd734fe--bunbuster.netlify.app',
 ];
 
 app.use(
