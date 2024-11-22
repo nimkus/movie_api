@@ -171,7 +171,7 @@ const cors = require('cors');
 const allowedOrigins = [
   'http://localhost:8080',
   'http://localhost:1234',
-  'https://bunbuster.netlify.app/',
+  'https://bunbuster.netlify.app',
   'https://6740909f766062af1bd734fe--bunbuster.netlify.app',
 ];
 
@@ -180,14 +180,10 @@ app.use(
     origin: (origin, callback) => {
       if (!origin) {
         return callback(null, true);
-        //If no origin is provided (e.g., server-to-server communication), deny by default
-        //return callback(new Error('CORS policy doesn’t allow access from unspecified origins'), false);
       }
-      // Check if the origin is in the allowed list
       if (allowedOrigins.includes(origin)) {
         return callback(null, true);
       } else {
-        // Logging for better debugging and tracking
         console.log(`CORS policy blocked request from origin: ${origin}`);
         // Avoid exposing the exact origin in production for security reseons
         const message =
