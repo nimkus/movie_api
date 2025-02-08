@@ -173,6 +173,7 @@ const allowedOrigins = [
   'http://localhost:1234',
   'https://bunbuster.netlify.app',
   'https://6740909f766062af1bd734fe--bunbuster.netlify.app',
+  'https://nimkus.github.io',
 ];
 
 app.use(
