@@ -26,9 +26,9 @@ A movie API system providing movie and user management with features like authen
 - **Cors**: Cross-Origin Resource Sharing middleware.
 - **Bcrypt**: Password hashing.
 
-## View Live
+## View Documentation
 
-https://nimkus-movies-flix-6973780b155e.herokuapp.com/
+[https://nimkus-movies-flix-6973780b155e.herokuapp.com/](https://nimkus-movies-flix-6973780b155e.herokuapp.com/documentation.html)
 
 ## API Endpoints
 
